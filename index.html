@@ -30,7 +30,7 @@
     <!-- Camera Feed Section -->
     <div id="cameraFeed" style="display:none;" class="center-screen">
         <h2>Live Camera Feed</h2>
-        <img id="liveFeed" alt="Live Camera Feed" class="camera-feed" />
+        <img id="liveFeed" src="http://192.168.50.9:5001/video_feed" alt="Live Camera Feed" class="camera-feed" />
         <div class="mode-buttons">
             <button onclick="activateMode(1)">Turn on Mode 1</button>
             <button onclick="activateMode(2)">Turn on Mode 2</button>
@@ -38,28 +38,24 @@
     </div>
 
     <script>
-        // Set base URLs
-        const BASE_URL = "https://157d-67-80-124-3.ngrok-free.app";  // ngrok URL for port 5000
-        const VIDEO_FEED_URL = "https://<second-ngrok-url>.ngrok-free.app/video_feed";  // ngrok URL for port 5001
-
         function showLogin() {
             window.location.href = 'login.html';
         }
 
         function goToCameraFeed() {
-            // Display the camera feed section
+            // Display the camera feed section without sending a GET request
             document.getElementById('homeScreen').style.display = 'none';
             document.getElementById('cameraFeed').style.display = 'flex';
 
-            // Set the live feed URL with dynamic timestamp to prevent caching
+            // Refresh the image feed every second to ensure it updates
             setInterval(() => {
                 const img = document.getElementById('liveFeed');
-                img.src = `${VIDEO_FEED_URL}?timestamp=${new Date().getTime()}`;
+                img.src = `http://192.168.50.9:5001/video_feed?timestamp=${new Date().getTime()}`;
             }, 1000);
         }
 
         function activateMode(mode) {
-            fetch(`${BASE_URL}/activate_mode/${mode}`, {
+            fetch(`https://157d-67-80-124-3.ngrok-free.app/activate_mode/${mode}`, { 
                 method: 'POST'
             })
             .then(response => response.json())
