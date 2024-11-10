@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Project</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Black bars -->
+    <div id="topBar"></div>
+    <div id="bottomBar"></div>
+
+    <!-- Menu Toggle Button -->
+    <div id="menuToggle" onclick="toggleMenu()">☰</div>
+
+    <!-- Profile/Login Icon -->
+    <div id="loginIcon" onclick="showLogin()">
+        <img src="profile-pic.png" alt="Profile">
+    </div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="center-screen">
+        <h1>Welcome to the Raspberry Pi Project</h1>
+        <p>Explore the exciting features of this project, including live camera feeds, activation modes, and much more.</p>
+        <div class="button-container">
+            <button class="home-button" onclick="goToCameraFeed()">View Camera Feed</button>
+            <button class="home-button" onclick="toggleMenu()">Open Menu</button>
+        </div>
+    </div>
+
+    <!-- Sliding Side Menu for Navigation -->
+    <div id="sideMenu">
+        <button onclick="goToCameraFeed()">📷 Camera Feed</button>
+        <button onclick="activateMode(1)">Activate Mode 1</button>
+        <button onclick="activateMode(2)">Activate Mode 2</button>
+        <button onclick="activateMode(3)">Activate Mode 3</button>
+        <button onclick="activateMode(4)">Activate Mode 4</button>
+        <button onclick="activateMode(5)">Activate Mode 5</button>
+    </div>
+
+    <!-- Camera Feed Section -->
+    <div id="cameraFeed" style="display:none;" class="center-screen">
+        <h2>Live Camera Feed</h2>
+        <img id="liveFeed" src="http://192.168.50.9:5001/video_feed" alt="Live Camera Feed" class="camera-feed" />
+        <div class="mode-buttons">
+            <button onclick="activateMode(1)">Turn on Mode 1</button>
+            <button onclick="activateMode(2)">Turn on Mode 2</button>
+        </div>
+        <!-- Back Home Button -->
+        <button class="back-home-button" onclick="goToHome()">Back to Home</button>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const sideMenu = document.getElementById('sideMenu');
+            if (sideMenu.classList.contains('open')) {
+                sideMenu.classList.remove('open');
+            } else {
+                sideMenu.classList.add('open');
+            }
+        }
+
+        function showLogin() {
+            window.location.href = 'login.html'; // Redirect to login page
+        }
+
+        function goToHome() {
+            document.getElementById('cameraFeed').style.display = 'none';
+            document.getElementById('homeScreen').style.display = 'flex';
+        }
+
+        function goToCameraFeed() {
+            document.getElementById('homeScreen').style.display = 'none';
+            document.getElementById('cameraFeed').style.display = 'flex';
+
+            setInterval(() => {
+                const img = document.getElementById('liveFeed');
+                img.src = `http://192.168.50.9:5001/video_feed?timestamp=${new Date().getTime()}`;
+            }, 1000);
+        }
+
+        function activateMode(mode) {
+            fetch(`http://192.168.50.9:5000/activate_mode/${mode}`, { 
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    alert(data.status);
+                } else {
+                    alert('Failed to activate mode: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to connect to Raspberry Pi');
+            });
+        }
+    </script>
+</body>
+</html>

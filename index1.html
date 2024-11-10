@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Project</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Black bars -->
+    <div id="topBar"></div>
+    <div id="bottomBar"></div>
+
+    <!-- Menu Toggle Button -->
+    <div id="menuToggle" onclick="toggleMenu()">☰</div>
+
+    <!-- Profile/Login Icon -->
+    <div id="loginIcon" onclick="showLogin()">
+        <img src="images/Default_pfp.svg.png" alt="Profile">
+    </div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="center-screen">
+        <h1><span class="welcome">Welcome to the</span> <span class="project-name">Raspberry Pi Project</span></h1>
+        <p>Discover the innovation behind our <strong>Sentry Security Camera</strong>. With real-time camera feeds, smart activation modes, and advanced features, you’ll experience a new level of security at your fingertips. Step into the future of intelligent security technology.</p>
+        <div class="button-container">
+            <button class="home-button" onclick="goToCameraFeed()">View Camera Feed</button>
+            <button class="home-button" onclick="toggleMenu()">Open Menu</button>
+        </div>
+    </div>
+
+    <!-- Sliding Side Menu for Navigation -->
+    <div id="sideMenu">
+        <button onclick="goToCameraFeed()">📷 Camera Feed</button>
+        <button onclick="activateMode(1)">NCNN Mode</button>
+        <button onclick="activateMode(2)">Laser Mode</button>
+        <button onclick="activateMode(3)">Camera Stream</button>
+        <button onclick="activateMode(4)">Client</button>
+        <button onclick="activateMode(5)">STOP</button>
+    </div>
+
+    <!-- Camera Feed Section -->
+    <div id="cameraFeed" style="display:none;" class="center-screen">
+        <h2>Live Camera Feed</h2>
+        <img id="liveFeed" src="http://192.168.50.9:5001/video_feed" alt="Live Camera Feed" class="camera-feed" />
+        <div class="mode-buttons">
+            <button onclick="activateMode(1)"> 1</button>
+            <button onclick="activateMode(2)"> 2</button>
+            <button onclick="activateMode(3)"> 3</button>
+            <button onclick="activateMode(4)"> 4</button>
+            <button onclick="activateMode(5)"> 5</button>
+        </div>
+        <!-- Back Home Button -->
+        <button class="back-home-button" onclick="goToHome()">Back to Home</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
