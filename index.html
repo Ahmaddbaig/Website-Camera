@@ -55,7 +55,7 @@
         }
 
         function activateMode(mode) {
-            fetch(`https://157d-67-80-124-3.ngrok-free.app/activate_mode/${mode}`, { 
+            fetch(`http:/192.168.50.9:5000/activate_mode/${mode}`, { 
                 method: 'POST'
             })
             .then(response => response.json())
