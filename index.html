@@ -7,29 +7,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Black bars -->
-    <div id="topBar"></div>
-    <div id="bottomBar"></div>
-
-    <!-- Menu Toggle Button -->
-    <div id="menuToggle" onclick="toggleMenu()">☰</div>
-
-    <!-- Profile/Login Icon -->
-    <div id="loginIcon" onclick="showLogin()">
-        <img src="profile-pic.png" alt="Profile">
-    </div>
-
     <!-- Home Screen -->
     <div id="homeScreen" class="center-screen">
         <h1>Welcome to the Raspberry Pi Project</h1>
-        <p>Explore the exciting features of this project, including live camera feeds, activation modes, and much more.</p>
-        <div class="button-container">
-            <button class="home-button" onclick="goToCameraFeed()">View Camera Feed</button>
-            <button class="home-button" onclick="toggleMenu()">Open Menu</button>
-        </div>
     </div>
 
-    <!-- Sliding Side Menu for Navigation -->
+    <!-- Top Right Login Icon -->
+    <div id="loginIcon" onclick="showLogin()">
+        <img src="login-icon.png" alt="Login" />
+    </div>
+
+    <!-- Side Menu for Navigation -->
     <div id="sideMenu">
         <button onclick="goToCameraFeed()">📷 Camera Feed</button>
         <button onclick="activateMode(1)">Activate Mode 1</button>
@@ -42,46 +30,36 @@
     <!-- Camera Feed Section -->
     <div id="cameraFeed" style="display:none;" class="center-screen">
         <h2>Live Camera Feed</h2>
-        <img id="liveFeed" src="http://192.168.50.9:5001/video_feed" alt="Live Camera Feed" class="camera-feed" />
+        <img id="liveFeed" alt="Live Camera Feed" class="camera-feed" />
         <div class="mode-buttons">
             <button onclick="activateMode(1)">Turn on Mode 1</button>
             <button onclick="activateMode(2)">Turn on Mode 2</button>
         </div>
-        <!-- Back Home Button -->
-        <button class="back-home-button" onclick="goToHome()">Back to Home</button>
     </div>
 
     <script>
-        function toggleMenu() {
-            const sideMenu = document.getElementById('sideMenu');
-            if (sideMenu.classList.contains('open')) {
-                sideMenu.classList.remove('open');
-            } else {
-                sideMenu.classList.add('open');
-            }
-        }
+        // Set base URLs
+        const BASE_URL = "https://157d-67-80-124-3.ngrok-free.app";  // ngrok URL for port 5000
+        const VIDEO_FEED_URL = "https://<second-ngrok-url>.ngrok-free.app/video_feed";  // ngrok URL for port 5001
 
         function showLogin() {
-            window.location.href = 'login.html'; // Redirect to login page
-        }
-
-        function goToHome() {
-            document.getElementById('cameraFeed').style.display = 'none';
-            document.getElementById('homeScreen').style.display = 'flex';
+            window.location.href = 'login.html';
         }
 
         function goToCameraFeed() {
+            // Display the camera feed section
             document.getElementById('homeScreen').style.display = 'none';
             document.getElementById('cameraFeed').style.display = 'flex';
 
+            // Set the live feed URL with dynamic timestamp to prevent caching
             setInterval(() => {
                 const img = document.getElementById('liveFeed');
-                img.src = `http://192.168.50.9:5001/video_feed?timestamp=${new Date().getTime()}`;
+                img.src = `${VIDEO_FEED_URL}?timestamp=${new Date().getTime()}`;
             }, 1000);
         }
 
         function activateMode(mode) {
-            fetch(`http://192.168.50.9:5000/activate_mode/${mode}`, { 
+            fetch(`${BASE_URL}/activate_mode/${mode}`, {
                 method: 'POST'
             })
             .then(response => response.json())
