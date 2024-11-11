@@ -27,7 +27,7 @@ function goToCameraFeed() {
 }
 
 function activateMode(mode) {
-    fetch(`http://192.168.50.9:5000/activate_mode/${mode}`, { 
+    fetch(`https://activationmode.share.zrok.io/activate_mode/${mode}`, { 
         method: 'POST'
     })
     .then(response => response.json())
