@@ -42,7 +42,7 @@
     <!-- Camera Feed Section -->
     <div id="cameraFeed" style="display:none;" class="center-screen">
         <h2>Live Camera Feed</h2>
-        <img id="liveFeed" src="https://5f2ff07snubp.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
+        <img id="liveFeed" src="https://9f9np1n8r6o4.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
         <div class="mode-buttons">
             <button onclick="activateMode(1)">Turn on Mode 1</button>
             <button onclick="activateMode(2)">Turn on Mode 2</button>
@@ -76,12 +76,12 @@
 
             setInterval(() => {
                 const img = document.getElementById('liveFeed');
-                img.src = `https://5f2ff07snubp.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
+                img.src = `https://9f9np1n8r6o4.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
             }, 1000);
         }
 
         function activateMode(mode) {
-            fetch(`http://192.168.50.9:5000/activate_mode/${mode}`, { 
+            fetch(`https://cwu1oqetai7z.share.zrok.io/activate_mode/${mode}`, { 
                 method: 'POST'
             })
             .then(response => response.json())
