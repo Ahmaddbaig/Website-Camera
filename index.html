@@ -16,13 +16,13 @@
 
     <!-- Profile/Login Icon -->
     <div id="loginIcon" onclick="showLogin()">
-        <img src="profile-pic.png" alt="Profile">
+        <img src="images/Default_pfp.svg.png" alt="Profile">
     </div>
 
     <!-- Home Screen -->
     <div id="homeScreen" class="center-screen">
-        <h1>Welcome to the Raspberry Pi Project</h1>
-        <p>Explore the exciting features of this project, including live camera feeds, activation modes, and much more.</p>
+        <h1><span class="welcome">Welcome to the</span> <span class="project-name">Raspberry Pi Project</span></h1>
+        <p>Discover the innovation behind our <strong>Sentry Security Camera</strong>. With real-time camera feeds, smart activation modes, and advanced features, you’ll experience a new level of security at your fingertips. Step into the future of intelligent security technology.</p>
         <div class="button-container">
             <button class="home-button" onclick="goToCameraFeed()">View Camera Feed</button>
             <button class="home-button" onclick="toggleMenu()">Open Menu</button>
@@ -32,11 +32,11 @@
     <!-- Sliding Side Menu for Navigation -->
     <div id="sideMenu">
         <button onclick="goToCameraFeed()">📷 Camera Feed</button>
-        <button onclick="activateMode(1)">Activate Mode 1</button>
-        <button onclick="activateMode(2)">Activate Mode 2</button>
-        <button onclick="activateMode(3)">Activate Mode 3</button>
-        <button onclick="activateMode(4)">Activate Mode 4</button>
-        <button onclick="activateMode(5)">Activate Mode 5</button>
+        <button onclick="activateMode(1)">NCNN Mode</button>
+        <button onclick="activateMode(2)">Laser Mode</button>
+        <button onclick="activateMode(3)">Camera Stream</button>
+        <button onclick="activateMode(4)">Client</button>
+        <button onclick="activateMode(5)">STOP</button>
     </div>
 
     <!-- Camera Feed Section -->
@@ -44,59 +44,14 @@
         <h2>Live Camera Feed</h2>
         <img id="liveFeed" src="https://camerastream.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
         <div class="mode-buttons">
-            <button onclick="activateMode(1)">Turn on Mode 1</button>
-            <button onclick="activateMode(2)">Turn on Mode 2</button>
+            <button onclick="activateMode(1)"> 1</button>
+            <button onclick="activateMode(2)"> 2</button>
+            <button onclick="activateMode(3)"> 3</button>
+            <button onclick="activateMode(4)"> 4</button>
+            <button onclick="activateMode(5)"> 5</button>
         </div>
         <!-- Back Home Button -->
         <button class="back-home-button" onclick="goToHome()">Back to Home</button>
     </div>
 
-    <script>
-        function toggleMenu() {
-            const sideMenu = document.getElementById('sideMenu');
-            if (sideMenu.classList.contains('open')) {
-                sideMenu.classList.remove('open');
-            } else {
-                sideMenu.classList.add('open');
-            }
-        }
-
-        function showLogin() {
-            window.location.href = 'login.html'; // Redirect to login page
-        }
-
-        function goToHome() {
-            document.getElementById('cameraFeed').style.display = 'none';
-            document.getElementById('homeScreen').style.display = 'flex';
-        }
-
-        function goToCameraFeed() {
-            document.getElementById('homeScreen').style.display = 'none';
-            document.getElementById('cameraFeed').style.display = 'flex';
-
-            setInterval(() => {
-                const img = document.getElementById('liveFeed');
-                img.src = `https://camerastream.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
-            }, 1000);
-        }
-
-        function activateMode(mode) {
-            fetch(`https://activationmode.share.zrok.io/activate_mode/${mode}`, { 
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status) {
-                    alert(data.status);
-                } else {
-                    alert('Failed to activate mode: ' + (data.error || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to connect to Raspberry Pi');
-            });
-        }
-    </script>
-</body>
-</html>
+    <script src="script.js"></script>
