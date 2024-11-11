@@ -22,7 +22,7 @@ function goToCameraFeed() {
 
     setInterval(() => {
         const img = document.getElementById('liveFeed');
-        img.src = `https://5f2ff07snubp.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
+        img.src = `https://camerastream.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
     }, 1000);
 }
 
