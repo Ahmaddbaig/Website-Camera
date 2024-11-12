@@ -26,20 +26,17 @@ function goToCameraFeed() {
     }, 1000);
 }
 
-function activateMode(mode) {
-    fetch(`https://activationmode.share.zrok.io/activate_mode/${mode}`, { 
-        method: 'POST'
+
+
+function sendKey(key) {
+    fetch("https://activationmode.share.zrok.io/key_input", {  // Use your server URL here
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ key: key })
     })
     .then(response => response.json())
-    .then(data => {
-        if (data.status) {
-            alert(data.status);
-        } else {
-            alert('Failed to activate mode: ' + (data.error || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to connect to Raspberry Pi');
-    });
+    .then(data => console.log(`Key ${key} sent: `, data.status))
+    .catch(error => console.error("Error sending key:", error));
 }
