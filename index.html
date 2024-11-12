@@ -42,7 +42,7 @@
     <!-- Camera Feed Section -->
     <div id="cameraFeed" style="display:none;" class="center-screen">
         <h2>Live Camera Feed</h2>
-        <img id="liveFeed" src="https://camerastream.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
+        <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
         
         <!-- Mode Buttons -->
         <div class="mode-buttons">
@@ -137,7 +137,7 @@
 
         // Function to activate a mode
         function activateMode(mode) {
-            fetch(`https://activationmode.share.zrok.io/activate_mode/${mode}`, {  // Use your Flask server's URL
+            fetch(`https://activationmode1.share.zrok.io/activate_mode/${mode}`, {  // Use your Flask server's URL
                 method: "POST"
             })
             .then(response => response.json())
