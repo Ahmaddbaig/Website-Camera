@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raspberry Pi Project</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Black bars -->
@@ -43,15 +43,91 @@
     <div id="cameraFeed" style="display:none;" class="center-screen">
         <h2>Live Camera Feed</h2>
         <img id="liveFeed" src="https://camerastream.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
+        
+        <!-- Mode Buttons -->
         <div class="mode-buttons">
-            <button onclick="activateMode(1)"> 1</button>
-            <button onclick="activateMode(2)"> 2</button>
-            <button onclick="activateMode(3)"> 3</button>
-            <button onclick="activateMode(4)"> 4</button>
-            <button onclick="activateMode(5)"> 5</button>
+            <button onclick="activateMode(1)">1</button>
+            <button onclick="activateMode(2)">2</button>
+            <button onclick="activateMode(3)">3</button>
+            <button onclick="activateMode(4)">4</button>
+            <button onclick="activateMode(5)">5</button>
         </div>
+
+        <!-- Control Buttons -->
+        <div class="control-buttons">
+            <h3>Camera Controls</h3>
+            <div class="arrow-keys">
+                <button class="arrow-key" onmousedown="startContinuousKey('w')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()">▲</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('a')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()">◄</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('s')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()">▼</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('d')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()">►</button>
+            </div>
+
+            <h3>Laser Controls</h3>
+            <button class="laser-button" onmousedown="startContinuousKey('p')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()">Laser</button>
+            <button class="laser-button" onmousedown="startContinuousKey('i')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()">Random</button>
+        </div>
+
         <!-- Back Home Button -->
         <button class="back-home-button" onclick="goToHome()">Back to Home</button>
     </div>
 
+    <!-- JavaScript to handle continuous key presses and button hold actions -->
+    <script>
+        let keyPressInterval; // Interval for sending continuous key press
+        const activeKeys = {}; // Object to track which keys are currently active
+
+        function isCameraFeedVisible() {
+            const cameraFeed = document.getElementById('cameraFeed');
+            return cameraFeed.style.display === 'flex' || cameraFeed.style.display === 'block';
+        }
+
+        function sendKey(key) {
+            // Sends a single key press command
+            fetch("https://activationmode.share.zrok.io/key_input", {  // Use your Flask server's URL
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key: key })
+            })
+            .then(response => response.json())
+            .then(data => console.log(`Key ${key} sent:`, data.status))
+            .catch(error => console.error("Error:", error));
+        }
+
+        function startContinuousKey(key) {
+            // Stop any ongoing interval before starting a new one
+            clearInterval(keyPressInterval);
+
+            // Start sending the key continuously every 100ms while held down
+            keyPressInterval = setInterval(() => {
+                sendKey(key);
+            }, 100); // Adjust the interval duration as needed
+        }
+
+        function stopContinuousKey() {
+            // Clears the interval to stop sending the key
+            clearInterval(keyPressInterval);
+        }
+
+        // Keyboard event listeners for continuous movement
+        document.addEventListener("keydown", function(event) {
+            if (!isCameraFeedVisible()) return; // Only proceed if camera feed is visible
+
+            const key = event.key.toLowerCase();
+            if (!activeKeys[key]) {
+                activeKeys[key] = true; // Mark key as active
+                startContinuousKey(key);
+            }
+        });
+
+        // Stop the continuous key press when the key is released
+        document.addEventListener("keyup", function(event) {
+            const key = event.key.toLowerCase();
+            activeKeys[key] = false; // Mark key as inactive
+            stopContinuousKey();
+        });
+    </script>
+
     <script src="script.js"></script>
+</body>
+</html>
