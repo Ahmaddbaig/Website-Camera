@@ -22,14 +22,14 @@ function goToCameraFeed() {
 
     setInterval(() => {
         const img = document.getElementById('liveFeed');
-        img.src = `https://camerastream.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
+        img.src = `https://camerastream1.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
     }, 1000);
 }
 
 
 
 function sendKey(key) {
-    fetch("https://activationmode.share.zrok.io/key_input", {  // Use your server URL here
+    fetch("https://activationmode1.share.zrok.io/key_input", {  // Use your server URL here
         method: "POST",
         headers: {
             "Content-Type": "application/json"
