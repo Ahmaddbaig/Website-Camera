@@ -31,12 +31,11 @@
 
     <!-- Sliding Side Menu for Navigation -->
     <div id="sideMenu">
-        <button onclick="goToCameraFeed()">📷 Camera Feed</button>
-        <button onclick="activateMode(1)">NCNN Mode</button>
-        <button onclick="activateMode(2)">Laser Mode</button>
-        <button onclick="activateMode(3)">Camera Stream</button>
-        <button onclick="activateMode(4)">Client</button>
-        <button onclick="activateMode(5)">STOP</button>
+        <button onclick="activateMode(1)" ontouchstart="activateMode(1)">NCNN Mode</button>
+        <button onclick="activateMode(2)" ontouchstart="activateMode(2)">Laser Mode</button>
+        <button onclick="activateMode(3)" ontouchstart="activateMode(3)">Camera Stream</button>
+        <button onclick="activateMode(4)" ontouchstart="activateMode(4)">Client</button>
+        <button onclick="activateMode(5)" ontouchstart="activateMode(5)">STOP</button>
     </div>
 
     <!-- Camera Feed Section -->
@@ -46,11 +45,11 @@
         
         <!-- Mode Buttons -->
         <div class="mode-buttons">
-            <button onclick="activateMode(1)">1</button>
-            <button onclick="activateMode(2)">2</button>
-            <button onclick="activateMode(3)">3</button>
-            <button onclick="activateMode(4)">4</button>
-            <button onclick="activateMode(5)">5</button>
+            <button onclick="activateMode(1)" ontouchstart="activateMode(1)">1</button>
+            <button onclick="activateMode(2)" ontouchstart="activateMode(2)">2</button>
+            <button onclick="activateMode(3)" ontouchstart="activateMode(3)">3</button>
+            <button onclick="activateMode(4)" ontouchstart="activateMode(4)">4</button>
+            <button onclick="activateMode(5)" ontouchstart="activateMode(5)">5</button>
         </div>
 
         <!-- Control Buttons -->
@@ -72,7 +71,7 @@
         <button class="back-home-button" onclick="goToHome()">Back to Home</button>
     </div>
 
-    <!-- JavaScript to handle continuous key presses and button hold actions -->
+    <!-- JavaScript for handling mode switching and button hold actions -->
     <script>
         let keyPressInterval; // Interval for sending continuous key press
         const activeKeys = {}; // Object to track which keys are currently active
@@ -126,6 +125,16 @@
             activeKeys[key] = false; // Mark key as inactive
             stopContinuousKey();
         });
+
+        // Function to activate a mode
+        function activateMode(mode) {
+            fetch(`https://activationmode.share.zrok.io/activate_mode/${mode}`, {  // Use your Flask server's URL
+                method: "POST"
+            })
+            .then(response => response.json())
+            .then(data => console.log(`Mode ${mode} activated:`, data.status))
+            .catch(error => console.error("Error:", error));
+        }
     </script>
 
     <script src="script.js"></script>
