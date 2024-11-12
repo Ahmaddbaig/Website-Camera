@@ -31,6 +31,7 @@
 
     <!-- Sliding Side Menu for Navigation -->
     <div id="sideMenu">
+        <button onclick="goToCameraFeed()" ontouchstart="goToCameraFeed()">📷 View Camera Feed</button>
         <button onclick="activateMode(1)" ontouchstart="activateMode(1)">NCNN Mode</button>
         <button onclick="activateMode(2)" ontouchstart="activateMode(2)">Laser Mode</button>
         <button onclick="activateMode(3)" ontouchstart="activateMode(3)">Camera Stream</button>
@@ -71,7 +72,7 @@
         <button class="back-home-button" onclick="goToHome()">Back to Home</button>
     </div>
 
-    <!-- JavaScript for handling mode switching and button hold actions -->
+    <!-- JavaScript for handling view, mode switching, and button hold actions -->
     <script>
         let keyPressInterval; // Interval for sending continuous key press
         const activeKeys = {}; // Object to track which keys are currently active
@@ -79,6 +80,18 @@
         function isCameraFeedVisible() {
             const cameraFeed = document.getElementById('cameraFeed');
             return cameraFeed.style.display === 'flex' || cameraFeed.style.display === 'block';
+        }
+
+        function goToCameraFeed() {
+            console.log("Switching to camera feed"); // Debugging log
+            document.getElementById('homeScreen').style.display = 'none';
+            document.getElementById('cameraFeed').style.display = 'flex';
+        }
+
+        function goToHome() {
+            console.log("Returning to home screen"); // Debugging log
+            document.getElementById('cameraFeed').style.display = 'none';
+            document.getElementById('homeScreen').style.display = 'flex';
         }
 
         function sendKey(key) {
@@ -94,18 +107,14 @@
         }
 
         function startContinuousKey(key) {
-            // Stop any ongoing interval before starting a new one
-            clearInterval(keyPressInterval);
-
-            // Start sending the key continuously every 100ms while held down
-            keyPressInterval = setInterval(() => {
+            clearInterval(keyPressInterval); // Stop any ongoing interval before starting a new one
+            keyPressInterval = setInterval(() => { // Send the key continuously every 100ms while held down
                 sendKey(key);
             }, 100); // Adjust the interval duration as needed
         }
 
         function stopContinuousKey() {
-            // Clears the interval to stop sending the key
-            clearInterval(keyPressInterval);
+            clearInterval(keyPressInterval); // Clears the interval to stop sending the key
         }
 
         // Keyboard event listeners for continuous movement
