@@ -9,6 +9,13 @@ body {
    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
    background-color: #f5f5f7;
    color: #1d1d1f;
+   padding-bottom: 100px;  /* Adds extra scroll space at the bottom */
+}
+
+/* Smooth scrolling */
+html {
+   height: 100%;
+   scroll-behavior: smooth;
 }
 
 /* Black bars at the top and bottom */
@@ -79,47 +86,38 @@ body {
    font-size: 24px;
 }
 
-/* Centering content */
-.center-screen {
+/* Centering content on Home Screen */
+#homeScreen {
    display: flex;
    flex-direction: column;
-   justify-content: center;
+   justify-content: center; /* Center vertically */
    align-items: center;
-   height: 100vh;
+   height: 100vh; /* Full viewport height for vertical centering */
    text-align: center;
 }
 
+/* Home Screen Text Styling */
 #homeScreen h1 {
    font-size: 3em;
    font-weight: 700;
    margin-bottom: 16px;
-   text-align: center;
 }
 
 .welcome {
-   color: #000; /* Black color */
+   color: #000;
 }
 
 .project-name {
-   color: #ff0000; /* Red color */
+   color: #ff0000;
    display: inline-block;
    animation: waveEffect 2.5s infinite ease-in-out;
 }
 
-/* Smooth wavy animation */
 @keyframes waveEffect {
-   0%, 100% {
-       transform: translateY(0);
-   }
-   25% {
-       transform: translateY(-10px);
-   }
-   50% {
-       transform: translateY(10px);
-   }
-   75% {
-       transform: translateY(-10px);
-   }
+   0%, 100% { transform: translateY(0); }
+   25% { transform: translateY(-10px); }
+   50% { transform: translateY(10px); }
+   75% { transform: translateY(-10px); }
 }
 
 #homeScreen p {
@@ -127,7 +125,6 @@ body {
    color: #555;
    margin-bottom: 24px;
    max-width: 600px;
-   text-align: center;
 }
 
 .button-container {
@@ -156,10 +153,10 @@ body {
    position: fixed;
    top: 10px;
    right: 20px;
-   width: 48px; /* Set the size of the outer black border */
+   width: 48px;
    height: 48px;
-   background-color: #000; /* Black background for the border */
-   border-radius: 50%; /* Makes it circular */
+   background-color: #000;
+   border-radius: 50%;
    display: flex;
    align-items: center;
    justify-content: center;
@@ -170,9 +167,9 @@ body {
 }
 
 #loginIcon img {
-   width: 32px; /* Size of the inner image */
+   width: 32px;
    height: 32px;
-   border-radius: 50%; /* Makes the image circular */
+   border-radius: 50%;
 }
 
 #loginIcon:hover img {
@@ -180,7 +177,154 @@ body {
    opacity: 1;
 }
 
-/* Background styling for both login and signup pages */
+/* Camera feed section styling */
+#cameraFeed {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 15px;
+   padding-top: 20px;
+   text-align: center;
+   min-height: 100vh; /* Allow scrolling on the camera feed page */
+}
+
+#cameraFeed h2 {
+   color: #1d1d1f;
+   font-weight: 600;
+   font-size: 1.5em;
+   opacity: 0.85;
+}
+
+.camera-feed {
+   max-width: 90%;
+   border-radius: 20px;
+   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+   margin-bottom: 20px;
+   transition: transform 0.3s ease;
+}
+
+.camera-feed:hover {
+   transform: scale(1.02);
+}
+
+.mode-buttons {
+   display: flex;
+   gap: 12px;
+}
+
+.mode-buttons button, .back-home-button {
+   background-color: #007aff;
+   color: white;
+   border: none;
+   padding: 12px 18px;
+   border-radius: 12px;
+   font-size: 0.95em;
+   font-weight: 500;
+   cursor: pointer;
+   transition: background-color 0.3s ease;
+}
+
+.mode-buttons button:hover, .back-home-button:hover {
+   background-color: #005bb5;
+}
+
+/* Back Home button */
+.back-home-button {
+   margin-top: 20px;
+   padding: 10px 20px;
+   font-size: 16px;
+}
+
+/* Styling for the control buttons container */
+.control-buttons {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 10px;
+   margin-top: 20px;
+}
+
+/* Arrow keys container with T-shaped layout */
+.arrow-keys {
+   display: grid;
+   grid-template-columns: 50px 50px 50px;
+   grid-template-rows: 50px 50px;
+   gap: 5px;
+   justify-items: center;
+   align-items: center;
+}
+
+/* Specific positions for each button */
+.arrow-key:nth-child(1) { grid-column: 2; } /* ▲ (W) on top center */
+.arrow-key:nth-child(2) { grid-column: 1; grid-row: 2; } /* ◄ (A) on left */
+.arrow-key:nth-child(3) { grid-column: 2; grid-row: 2; } /* ▼ (S) in center */
+.arrow-key:nth-child(4) { grid-column: 3; grid-row: 2; } /* ► (D) on right */
+
+/* Styling for each arrow key button */
+.arrow-key {
+   width: 50px;
+   height: 50px;
+   font-size: 18px;
+   font-weight: bold;
+   color: #333;
+   background-color: #e0e0e0;
+   border: 2px solid #999;
+   border-radius: 8px;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+/* Hover and active effects for arrow keys */
+.arrow-key:hover {
+   background-color: #d0d0d0;
+   border-color: #888;
+   transform: translateY(-2px);
+   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.arrow-key:active {
+   transform: translateY(2px);
+   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+   background-color: #c0c0c0;
+}
+
+/* Laser buttons styling */
+.laser-button {
+   width: 50px;
+   height: 50px;
+   font-size: 18px;
+   font-weight: bold;
+   color: #fff;
+   background-color: #ff4d4d;
+   border: 2px solid #cc0000;
+   border-radius: 8px;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+/* Hover and active effects for laser buttons */
+.laser-button:hover {
+   background-color: #ff3333;
+   border-color: #b30000;
+   transform: translateY(-2px);
+   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.laser-button:active {
+   transform: translateY(2px);
+   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+   background-color: #e60000;
+}
+
+/* Background styling for login and signup pages */
 .login-background, .signup-background {
    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('images/blue-background-7470781_960_720.jpg');
    background-size: cover;
@@ -195,7 +339,6 @@ body {
 
 /* Transparent container styling for login and signup */
 .login-container, .signup-container {
-   /* Existing styles */
    background-color: rgba(255, 255, 255, 0.7); /* Increased transparency */
    padding: 40px;
    border-radius: 12px;
@@ -208,6 +351,7 @@ body {
    animation: fadeInUp 0.6s ease-in-out forwards;
 }
 
+/* Fade-in animation for login/signup container */
 @keyframes fadeInUp {
    to {
        opacity: 1;
@@ -217,7 +361,6 @@ body {
 
 /* Form title styling */
 .login-form h2, .signup-form h2 {
-   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
    font-size: 1.8em;
    color: #333333;
    margin-bottom: 20px;
@@ -288,56 +431,4 @@ body {
 
 .login-link:hover, .signup-link:hover {
    color: #005bb5;
-}
-
-/* Camera feed */
-#cameraFeed {
-   flex-direction: column;
-   align-items: center;
-}
-
-#cameraFeed h2 {
-   color: #1d1d1f;
-   margin-bottom: 20px;
-   font-weight: 600;
-   font-size: 1.5em;
-   opacity: 0.85;
-}
-
-.camera-feed {
-   max-width: 90%;
-   border-radius: 20px;
-   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-   margin-bottom: 20px;
-   transition: transform 0.3s ease;
-}
-
-.camera-feed:hover {
-   transform: scale(1.02);
-}
-
-.mode-buttons {
-   display: flex;
-   gap: 12px;
-}
-
-.mode-buttons button, .back-home-button {
-   background-color: #007aff;
-   color: white;
-   border: none;
-   padding: 12px 18px;
-   border-radius: 12px;
-   font-size: 0.95em;
-   font-weight: 500;
-   cursor: pointer;
-   transition: background-color 0.3s ease;
-}
-
-.mode-buttons button:hover, .back-home-button:hover {
-   background-color: #005bb5;
-}
-
-/* Back Home button */
-.back-home-button {
-   margin-top: 20px;
 }
