@@ -1,4 +1,3 @@
-/* Import Google Fonts for enhanced typography */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Roboto:wght@300&display=swap');
 
 /* Base and Reset Styles */
@@ -12,60 +11,53 @@ body, html {
     height: 100%;
 }
 
-/* Logo Styling */
-.logo {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    color: #000;
+/* Top Blue Banner */
+.top-banner {
+    background-color: #1d3557;
+    color: white;
+    padding: 20px;
     text-align: center;
-    z-index: 5;
-    cursor: pointer;
-    transition: transform 0.3s;
+    position: relative;
+    font-family: 'Playfair Display', serif;
 }
 
-.logo:hover {
-    transform: scale(1.05);
+/* Logo styling */
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
 }
 
 .logo .sentry {
-    font-family: 'Playfair Display', serif;
     font-size: 2.5em;
     font-weight: 900;
-    letter-spacing: 0.05em;
-    line-height: 1;
+    color: #000; /* Changed to black */
 }
 
 .logo .security {
     font-family: 'Roboto', sans-serif;
     font-size: 1em;
+    color: #000; /* Changed to black */
     font-weight: 300;
     letter-spacing: 0.3em;
+}
+
+.contact-link {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.2em;
+    color: #ffffff;
+    font-weight: 400;
+    text-decoration: underline;
     margin-top: 5px;
-    display: block;
-}
-
-/* Header and Title Styling */
-header {
-    background-color: #1d3557;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.header-title h1 {
-    text-align: center;
-    flex-grow: 1;
-    margin: 0;  /* Removes default margin */
+    cursor: pointer;
 }
 
 /* Hamburger Menu Button */
 .hamburger {
     position: absolute;
-    top: 10px;
+    top: 20px;
     right: 20px;
     font-size: 24px;
     color: white;
@@ -76,21 +68,22 @@ header {
     z-index: 1001;
 }
 
-/* Sidebar Menu Styling */
-
+/* Full-width sidebar menu */
 .side-menu {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.9);
+    color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    z-index: 1000;
 }
 
 .side-menu.open {
@@ -104,11 +97,15 @@ header {
     padding: 15px;
     font-size: 18px;
     cursor: pointer;
+    text-align: center;
+    width: 100%;
 }
 
-/* Main Content Styling */
+/* Main content styling */
 main {
-    padding: 20px;
+    padding-top: 20px;
+    margin: 0 20px;
+    padding-bottom: 100px;
 }
 
 .features article {
@@ -119,44 +116,19 @@ main {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.features h2 {
-    color: #1d3557;
-}
-
-/* Footer Styling */
+/* Footer styling update */
 footer {
     background-color: #1d3557;
     color: white;
     text-align: center;
     padding: 20px;
-    font-size: 0.9em;
-    margin-top: 40px;
+    width: 100%;
+    margin-top: 20px;
 }
 
-footer p {
-    margin-bottom: 10px;
-}
-
-footer a {
-    color: #e63946;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-footer a:hover {
-    color: #f4a261;
-}
-
-/* Responsive Design Adjustments */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .hero-content h1 {
-        font-size: 2em;
-    }
     .logo .sentry {
         font-size: 2em;
-    }
-    .modal-content {
-        width: 90%;
-        padding: 20px;
     }
 }
