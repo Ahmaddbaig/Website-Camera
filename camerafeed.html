@@ -10,7 +10,7 @@
 <body>
 
     <!-- Logo Section -->
-    <div class="logo" onclick="location.href='index.html'">
+    <div class="logo" onclick="location.href='index2.html'">
         <div class="sentry">SENTRY</div>
         <div class="security">SECURITY</div>
     </div>
@@ -20,7 +20,7 @@
 
     <!-- Sidebar Menu -->
     <div id="sideMenu" class="side-menu">
-        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='index2.html'">Home</button>
         <button onclick="location.href='meet.html'">Meet the Team</button>
         <button onclick="location.href='camerafeed.html'">Camera Feed</button>
         <button onclick="location.href='features.html'">Features</button>
@@ -32,7 +32,14 @@
     <!-- Camera Feed Section -->
     <section class="center-screen">
         <h2>Live Camera Feed</h2>
-        <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
+        <div class="tv-frame">
+            <div class="tv-inner-frame">
+                <div class="tv-screen">
+                    <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
+                    <button class="fullscreen-button" onclick="toggleFullScreen()">Full Screen</button>
+                </div>
+            </div>
+        </div>
         
         <!-- Mode Buttons -->
         <div class="mode-buttons">
@@ -69,69 +76,83 @@
         </p>
     </footer>
 
-    <!-- JavaScript for Sidebar Toggle and Functionality -->
-    <script>
-        // Toggle the sidebar menu
-        function toggleMenu() {
-            const sideMenu = document.getElementById("sideMenu");
-            sideMenu.classList.toggle("open");
-        }
-
-        // Start and stop key commands for camera control
-        let keyPressInterval;
-        const activeKeys = {};
-
-        function sendKey(key) {
-            fetch("https://activationmode1.share.zrok.io/key_input", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ key: key })
-            })
-            .then(response => response.json())
-            .then(data => console.log(`Key ${key} sent:`, data.status))
-            .catch(error => console.error("Error:", error));
-        }
-
-        function startContinuousKey(key) {
-            clearInterval(keyPressInterval);
-            keyPressInterval = setInterval(() => sendKey(key), 100);
-        }
-
-        function stopContinuousKey() {
-            clearInterval(keyPressInterval);
-        }
-
-        document.addEventListener("keydown", function(event) {
-            const key = event.key.toLowerCase();
-            if (!activeKeys[key]) {
-                activeKeys[key] = true;
-                startContinuousKey(key);
+        <!-- JavaScript for Sidebar Toggle and Functionality -->
+        <script>
+            // Toggle the sidebar menu
+            function toggleMenu() {
+                const sideMenu = document.getElementById("sideMenu");
+                sideMenu.classList.toggle("open");
             }
-        });
+    
+            // Start and stop key commands for camera control
+            let keyPressInterval;
+            const activeKeys = {};
+    
+            function sendKey(key) {
+                fetch("https://activationmode1.share.zrok.io/key_input", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ key: key })
+                })
+                .then(response => response.json())
+                .then(data => console.log(`Key ${key} sent:`, data.status))
+                .catch(error => console.error("Error:", error));
+            }
+    
+            function startContinuousKey(key) {
+                clearInterval(keyPressInterval);
+                keyPressInterval = setInterval(() => sendKey(key), 100);
+            }
+    
+            function stopContinuousKey() {
+                clearInterval(keyPressInterval);
+            }
+    
+            document.addEventListener("keydown", function(event) {
+                const key = event.key.toLowerCase();
+                if (!activeKeys[key]) {
+                    activeKeys[key] = true;
+                    startContinuousKey(key);
+                }
+            });
+    
+            document.addEventListener("keyup", function(event) {
+                const key = event.key.toLowerCase();
+                activeKeys[key] = false;
+                stopContinuousKey();
+            });
+    
+            // Activate camera mode
+            function activateMode(mode) {
+                fetch(`https://activationmode1.share.zrok.io/activate_mode/${mode}`, {
+                    method: "POST"
+                })
+                .then(response => response.json())
+                .then(data => console.log(`Mode ${mode} activated:`, data.status))
+                .catch(error => console.error("Error:", error));
+            }
 
-        document.addEventListener("keyup", function(event) {
-            const key = event.key.toLowerCase();
-            activeKeys[key] = false;
-            stopContinuousKey();
-        });
+            function toggleFullScreen() {
+                let doc = window.document;
+                let feed = doc.querySelector('.tv-screen'); // Ensure this targets the container including the controls
 
-        // Activate camera mode
-        function activateMode(mode) {
-            fetch(`https://activationmode1.share.zrok.io/activate_mode/${mode}`, {
-                method: "POST"
-            })
-            .then(response => response.json())
-            .then(data => console.log(`Mode ${mode} activated:`, data.status))
-            .catch(error => console.error("Error:", error));
-        }
+                let requestFullScreen = feed.requestFullscreen || feed.mozRequestFullScreen || feed.webkitRequestFullScreen || feed.msRequestFullscreen;
+                let cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
-        // Refresh live feed every second
-        function refreshLiveFeed() {
-            const img = document.getElementById('liveFeed');
-            img.src = `https://camerastream1.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
-        }
-
-        setInterval(refreshLiveFeed, 1000);
-    </script>
+                if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+                    requestFullScreen.call(feed);
+                } else {
+                    cancelFullScreen.call(doc);
+                }
+            }
+    
+            // Refresh live feed every second
+            function refreshLiveFeed() {
+                const img = document.getElementById('liveFeed');
+                img.src = `https://camerastream1.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
+            }
+    
+            setInterval(refreshLiveFeed, 1000);
+        </script>
 </body>
 </html>
