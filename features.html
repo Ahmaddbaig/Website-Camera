@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Features | Camera Project</title>
+    <link rel="stylesheet" href="features.css">
+</head>
+<body>
+    <div class="logo" onclick="location.href='index2.html'">
+        <div class="sentry">SENTRY</div>
+        <div class="security">SECURITY</div>
+    </div>
+    
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div id="sideMenu" class="side-menu">
+        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='about.html'">About</button>
+        <button onclick="location.href='eatures.html'">Product Features</button>
+        <button onclick="location.href='faq.html'">FAQ</button>
+        <button onclick="location.href='contact.html'">Contact</button>
+        <button onclick="location.href='login.html'">Login</button>
+    </div>
+
+    <main>
+        <header>
+            <h1>Camera Product Features</h1>
+        </header>
+        <section class="features">
+            <article>
+                <h2>Real-Time Object Tracking with OpenCV and YOLO</h2>
+                <p>Utilizing advanced machine learning algorithms, our camera system employs OpenCV and YOLO for real-time object detection and tracking. This mode enhances frame rates by converting YOLO models into NCNN files, boosting performance without sacrificing accuracy.</p>
+            </article>
+            <article>
+                <h2>Server-Based Tracking</h2>
+                <p>To optimize processing efficiency, our system offloads heavy tracking tasks from the Raspberry Pi to a dedicated server. This approach allows for more complex processing tasks, including frame analysis and object tracking, to be handled more effectively, ensuring smoother operation even under demanding conditions.</p>
+            </article>
+            <article>
+                <h2>Interactive Laser Mode for Pets</h2>
+                <p>Engage your pets in play with our interactive laser mode. Control the laser directly through keyboard commands or touch input, while the camera automatically keeps the laser in focus at the center of the frame, providing endless fun for pets and owners alike.</p>
+            </article>
+            <article>
+                <h2>Manual Tracking Control</h2>
+                <p>For ultimate control, our camera system offers a manual tracking mode, allowing users to command the camera's movement via keyboard or touch. This feature is perfect for custom surveillance needs or specific observational tasks, providing precision and flexibility.</p>
+            </article>
+            <article>
+                <h2>Robust Integration with Flask</h2>
+                <p>At the core of our camera's functionality is Flask, a lightweight Python web framework that supports all our camera's interactive features. Whether it's managing web requests or interfacing with hardware components like the PCA9685 for precise motor control, Flask ensures a seamless and scalable application environment.</p>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // JavaScript for sidebar toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger');
+            const sideMenu = document.querySelector('#sideMenu');
+
+            function toggleMenu() {
+                sideMenu.classList.toggle('open');
+            }
+
+            hamburger.addEventListener('click', toggleMenu);
+        });
+    </script>
+</body>
+</html>

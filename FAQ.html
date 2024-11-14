@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ | Your Website</title>
+    <link rel="stylesheet" href="FAQ.css"> <!-- Link to your CSS file -->
+    <script src="scripts.js" defer></script> <!-- Optional: Link to your JavaScript file if you separate the script -->
+</head>
+<body>
+    <header>
+        <div class="logo" onclick="window.location.href='index2.html';">
+            <div class="sentry">SENTRY</div>
+            <div class="security">SECURITY</div>
+        </div>
+        <div class="header-title">
+            <h1>Frequently Asked Questions</h1>
+        </div>
+    </header>
+
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div id="sideMenu" class="side-menu">
+        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='meet.html'">Meet The Team</button>
+        <button onclick="location.href='FAQ.html'">FAQ</button>
+        <button onclick="location.href='contact.html'">Contact</button>
+        <button onclick="location.href='login.html'">Login </button>
+    </div>
+
+    <main>
+        <section class="faq-container">
+            <article class="faq">
+                <h2 class="faq-question">What is the purpose of this project?</h2>
+                <p class="faq-answer">This project aims to provide users with a comprehensive understanding of our product and its features.</p>
+            </article>
+            <article class="faq">
+                <h2 class="faq-question">How do I get started with using the product?</h2>
+                <p class="faq-answer">To start using the product, you can sign up on our website and follow the introductory tutorial available in your dashboard.</p>
+            </article>
+            <article class="faq">
+                <h2 class="faq-question">What is the advantage of using NCNN files for YOLO models?</h2>
+                <p class="faq-answer">Converting YOLO models to NCNN files significantly boosts the frame rate and processing efficiency of our camera system. This format is optimized for use on devices with limited computational power, like the Raspberry Pi, ensuring faster object detection without compromising accuracy.</p>
+            </article>
+            <article class="faq">
+                <h2 class="faq-question">How does server-based tracking enhance camera performance?</h2>
+                <p class="faq-answer">By offloading the computationally intensive tasks of frame analysis and object tracking to a server, our system minimizes the processing load on the Raspberry Pi. This setup allows for more complex algorithms to run smoothly, enhancing the overall performance and reliability of real-time tracking.</p>
+            </article>
+            <article class="faq">
+                <h2 class="faq-question">Can I control the laser mode from my mobile device?</h2>
+                <p class="faq-answer">Yes, our camera system is equipped with interfaces that allow control via both mobile and desktop devices. You can activate the laser mode using simple touch or click commands through a connected app or web interface, offering convenience and flexibility for interactive play with pets.</p>
+            </article>
+            <article class="faq">
+                <h2 class="faq-question">What custom settings can I adjust manually in manual tracking mode?</h2>
+                <p class="faq-answer">In manual tracking mode, you can adjust settings such as the pan and tilt angles. These adjustments can be made via keyboard shortcuts or through a touch interface, giving you complete control over the camera's viewing angle and focus.</p>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const faqs = document.querySelectorAll('.faq');
+            faqs.forEach(faq => {
+                faq.querySelector('.faq-question').addEventListener('click', () => {
+                    const answer = faq.querySelector('.faq-answer');
+                    answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+
+            const hamburger = document.querySelector('.hamburger');
+            const sideMenu = document.querySelector('#sideMenu');
+
+            function toggleMenu() {
+                sideMenu.classList.toggle('open');
+            }
+
+            hamburger.addEventListener('click', toggleMenu);
+        });
+    </script>
+</body>
+</html>

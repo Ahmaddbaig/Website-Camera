@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Camera Project</title>
+    <link rel="stylesheet" href="contact.css">
+</head>
+<body>
+    <header>
+        <div class="logo" onclick="location.href='index2.html'">
+            <div class="sentry">SENTRY</div>
+            <div class="security">SECURITY</div>
+        </div>
+        <h1 class="page-title">Contact Us</h1>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+    </header>
+
+    <div id="sideMenu" class="side-menu">
+        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='product_features.html'">Product Features</button>
+        <button onclick="location.href='faq.html'">FAQ</button>
+        <button onclick="location.href='contact.html'">Contact</button>
+    </div>
+
+    <main>
+        <section class="contact-container">
+            <div class="contact-info">
+                <h2>Get in Touch</h2>
+                <p>If you have any questions or need support, please contact us using the form below or at:</p>
+                <ul>
+                    <li>Email: support@cameraproject.com</li>
+                    <li>Phone: </li>
+                    <li>Address: </li>
+                </ul>
+            </div>
+            <form class="contact-form" action="submit_form.php" method="POST">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("sideMenu").classList.toggle("open");
+        }
+    </script>
+</body>
+</html>
