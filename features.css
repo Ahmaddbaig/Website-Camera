@@ -13,13 +13,14 @@ body, html {
 }
 
 /* Logo Styling */
+/* Logo Section */
 .logo {
-    position: absolute;
+    position: fixed;
     top: 20px;
     left: 20px;
     color: #000;
     text-align: center;
-    z-index: 2; /* Ensures the logo appears above the title */
+    z-index: 5;
     cursor: pointer;
     transition: transform 0.3s;
 }
@@ -77,23 +78,26 @@ header {
 }
 
 /* Sidebar Menu Styling */
+
 .side-menu {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    width: 100%; /* Ensures the menu stretches across the full width */
+    height: 100%; /* Full height to cover the entire viewport */
+    background: rgba(0, 0, 0, 0.9); /* Semi-transparent background */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transform: translateX(-100%);
+    transform: translateX(-100%); /* Initially hidden off the screen */
     transition: transform 0.3s ease;
+    z-index: 1500; /* High z-index to ensure it's above other content */
 }
 
+
 .side-menu.open {
-    transform: translateX(0);
+    transform: translateX(0); /* Moves into view when 'open' */
 }
 
 .side-menu button {
