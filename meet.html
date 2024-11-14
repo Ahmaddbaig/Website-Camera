@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet the Team</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="meet.css"> <!-- Link to the external CSS file -->
+</head>
+<body>
+    <!-- Logo -->
+    <div class="logo" onclick="location.href='index2.html'">
+        <div class="sentry">SENTRY</div>
+        <div class="security">SECURITY</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Redefining the Team</h1>
+            <p>Meet the specialists dedicated to innovation and excellence in the tech industry.</p>
+            <a href="#team-section" class="scroll-down">Scroll down to meet us</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+    </section>
+
+    <!-- Sidebar Menu -->
+    <div id="sideMenu">
+        <button onclick="location.href='index2.html'">Home</button>
+        <button onclick="location.href='buying.html'">Pricing</button>
+        <button onclick="location.href='meet.html'">Meet The Team</button>
+    </div>
+
+    <!-- Team Section -->
+    <section id="team-section" class="team-container">
+        <div class="team-member" onclick="openModal('ahmad')">
+            <img src="images/Screenshot 2024-11-13 at 10.41.46 PM.png" alt="Ahmad Baig">
+            <h2>Ahmad Baig</h2>
+            <p>Co-Founder</p>
+            <p>Software Developer</p>
+        </div>
+        <div class="team-member" onclick="openModal('usman')">
+            <img src="partner-photo.jpg" alt="Usman Naveed">
+            <h2>Usman Naveed</h2>
+            <p>Co-Founder</p>
+        </div>
+    </section>
+
+    <!-- Modal Pop-up -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <img id="modal-image" src="" alt="">
+            <div class="modal-text">
+                <h2 id="modal-name">Name</h2>
+                <p id="modal-biography">Biography text goes here...</p>
+                <div class="modal-contact">
+                    <p><span class="highlight">Phone:</span> <span id="modal-phone">N/A</span></p>
+                    <p><span class="highlight">Email:</span> <span id="modal-email">N/A</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+        <p>Follow us: <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/">LinkedIn</a> | <a href="#">Twitter</a> | <a href="#">Facebook</a></p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'flex' : 'none';
+        }
+
+        const teamMembers = {
+            ahmad: {
+                name: "Ahmad Baig",
+                image: "images/IMG_4084.jpeg",
+                biography: "Currently a student at Brooklyn College, Ahmad is pursuing a bachelor's degree in computer science. Recently, he discovered a strong interest in hardware and artificial intelligence, particularly in machine learning applications. His studies and projects have given him a unique perspective on the interaction between software and hardware, sparking a desire to explore this field further.",
+                phone: "+1 347 784 2377",
+                email: "ahmaddbaig@gmail.com"
+            },
+            usman: {
+                name: "Usman Naveed",
+                image: "partner-photo.jpg",
+                biography: "Usman is an enthusiastic coder with a drive for creativity and problem-solving. His innovative spirit and collaborative mindset make him a valuable asset to the team.",
+                phone: "+1 646 987 6543",
+                email: "usman@example.com"
+            }
+        };
+
+        function openModal(member) {
+            const modal = document.getElementById("modal");
+            document.getElementById("modal-name").textContent = teamMembers[member].name;
+            document.getElementById("modal-image").src = teamMembers[member].image;
+            document.getElementById("modal-biography").textContent = teamMembers[member].biography;
+            document.getElementById("modal-phone").textContent = teamMembers[member].phone;
+            document.getElementById("modal-email").textContent = teamMembers[member].email;
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("modal");
+            modal.style.display = "none";
+        }
+    </script>
+</body>
+</html>

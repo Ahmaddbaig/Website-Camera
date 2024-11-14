@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Feed | Raspberry Pi Project</title>
+    <link rel="stylesheet" href="camera.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <!-- Logo Section -->
+    <div class="logo" onclick="location.href='index2.html'">
+        <div class="sentry">SENTRY</div>
+        <div class="security">SECURITY</div>
+    </div>
+
+    <!-- Hamburger Menu Button -->
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+
+    <!-- Sidebar Menu -->
+    <div id="sideMenu" class="side-menu">
+        <button onclick="location.href='index2.html'">Home</button>
+        <button onclick="location.href='meet.html'">Meet the Team</button>
+        <button onclick="location.href='camerafeed.html'">Camera Feed</button>
+        <button onclick="location.href='features.html'">Features</button>
+        <button onclick="location.href='faq.html'">FAQ</button>
+        <button onclick="location.href='about.html'">About</button>
+        <button onclick="location.href='contact.html'">Contact</button>
+    </div>
+
+    <!-- Camera Feed Section -->
+    <section class="center-screen">
+        <h2>Live Camera Feed</h2>
+        <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
+        
+        <!-- Mode Buttons -->
+        <div class="mode-buttons">
+            <button onclick="activateMode(1)" ontouchstart="activateMode(1)">Mode 1</button>
+            <button onclick="activateMode(2)" ontouchstart="activateMode(2)">Mode 2</button>
+            <button onclick="activateMode(3)" ontouchstart="activateMode(3)">Mode 3</button>
+            <button onclick="activateMode(4)" ontouchstart="activateMode(4)">Mode 4</button>
+            <button onclick="activateMode(5)" ontouchstart="activateMode(5)">Mode 5</button>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="control-buttons">
+            <h3>Camera Controls</h3>
+            <div class="arrow-keys">
+                <button class="arrow-key" onmousedown="startContinuousKey('w')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('w')" ontouchend="stopContinuousKey()">▲</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('a')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('a')" ontouchend="stopContinuousKey()">◄</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('s')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('s')" ontouchend="stopContinuousKey()">▼</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('d')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('d')" ontouchend="stopContinuousKey()">►</button>
+            </div>
+
+            <h3>Laser Controls</h3>
+            <button class="laser-button" onmousedown="startContinuousKey('p')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('p')" ontouchend="stopContinuousKey()">Laser</button>
+            <button class="laser-button" onmousedown="startContinuousKey('i')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('i')" ontouchend="stopContinuousKey()">Random</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+        <p>Follow us: 
+            <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/" target="_blank">LinkedIn</a> | 
+            <a href="https://twitter.com/yourusername" target="_blank">Twitter</a> | 
+            <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        </p>
+    </footer>
+
+    <!-- JavaScript for Sidebar Toggle and Functionality -->
+    <script>
+        // Toggle the sidebar menu
+        function toggleMenu() {
+            const sideMenu = document.getElementById("sideMenu");
+            sideMenu.classList.toggle("open");
+        }
+
+        // Start and stop key commands for camera control
+        let keyPressInterval;
+        const activeKeys = {};
+
+        function sendKey(key) {
+            fetch("https://activationmode1.share.zrok.io/key_input", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key: key })
+            })
+            .then(response => response.json())
+            .then(data => console.log(`Key ${key} sent:`, data.status))
+            .catch(error => console.error("Error:", error));
+        }
+
+        function startContinuousKey(key) {
+            clearInterval(keyPressInterval);
+            keyPressInterval = setInterval(() => sendKey(key), 100);
+        }
+
+        function stopContinuousKey() {
+            clearInterval(keyPressInterval);
+        }
+
+        document.addEventListener("keydown", function(event) {
+            const key = event.key.toLowerCase();
+            if (!activeKeys[key]) {
+                activeKeys[key] = true;
+                startContinuousKey(key);
+            }
+        });
+
+        document.addEventListener("keyup", function(event) {
+            const key = event.key.toLowerCase();
+            activeKeys[key] = false;
+            stopContinuousKey();
+        });
+
+        // Activate camera mode
+        function activateMode(mode) {
+            fetch(`https://activationmode1.share.zrok.io/activate_mode/${mode}`, {
+                method: "POST"
+            })
+            .then(response => response.json())
+            .then(data => console.log(`Mode ${mode} activated:`, data.status))
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Refresh live feed every second
+        function refreshLiveFeed() {
+            const img = document.getElementById('liveFeed');
+            img.src = `https://camerastream1.share.zrok.io/video_feed?timestamp=${new Date().getTime()}`;
+        }
+
+        setInterval(refreshLiveFeed, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+/* Reset Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #333;
+}
+
+/* Logo Styling */
+.logo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    z-index: 5;
+    text-align: center;
+}
+
+.sentry {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5em;
+    font-weight: 900;
+    color: #1d3557;
+}
+
+.security {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
+    color: #e63946;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    display: block;
+}
+
+/* Hamburger Menu Button */
+.hamburger {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.3s;
+    z-index: 5;
+}
+
+.hamburger:hover {
+    background-color: #e63946;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* Sidebar Menu Styling */
+.side-menu {
+    position: fixed;
+    top: 0;
+    right: -250px;
+    width: 250px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 60px;
+    padding-left: 20px;
+    z-index: 10;
+    transition: right 0.3s ease;
+    box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.3);
+}
+
+.side-menu.open {
+    right: 0;
+}
+
+.side-menu button {
+    background: none;
+    color: #ffffff;
+    font-size: 18px;
+    border: none;
+    padding: 15px 0;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    text-align: left;
+    transition: color 0.3s;
+}
+
+.side-menu button:hover {
+    color: #e63946;
+}
+
+/* Main Content Styling */
+.center-screen {
+    margin: 100px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Camera Feed Styling */
+.camera-feed {
+    width: 80%;
+    max-width: 700px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Mode and Control Buttons Styling */
+.mode-buttons, .control-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.mode-buttons button, .control-buttons button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    background-color: #e63946;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.mode-buttons button:hover, .control-buttons button:hover {
+    background-color: #d02735;
+}
+
+/* Arrow and Laser Control Buttons */
+.control-buttons {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.control-buttons h3 {
+    color: #1d3557;
+    margin-bottom: 10px;
+}
+
+.arrow-keys {
+    display: grid;
+    grid-template-columns: 50px 50px 50px;
+    gap: 5px;
+}
+
+.arrow-key, .laser-button {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5em;
+    color: white;
+    background-color: #1d3557;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.arrow-key:hover, .laser-button:hover {
+    background-color: #457b9d;
+}
+
+.back-home-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.back-home-button:hover {
+    background-color: #555;
+}
+
+/* Footer */
+footer {
+    background-color: #1d3557;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9em;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+footer p {
+    margin: 0;
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+footer a {
+    color: #e63946;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0 5px;
+    transition: color 0.3s, transform 0.2s;
+}
+
+footer a:hover {
+    color: #f4a261;
+    transform: scale(1.1);
+}
+
+/* For spacing when the footer is fixed */
+.main-content {
+    padding-bottom: 60px; /* Adjust padding based on footer height */
+}
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+    .logo .sentry {
+        font-size: 2em;
+    }
+
+    .side-menu button {
+        font-size: 16px;
+    }
+}
