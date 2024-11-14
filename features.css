@@ -13,7 +13,6 @@ body, html {
 }
 
 /* Logo Styling */
-/* Logo Section */
 .logo {
     position: fixed;
     top: 20px;
@@ -83,21 +82,19 @@ header {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%; /* Ensures the menu stretches across the full width */
-    height: 100%; /* Full height to cover the entire viewport */
-    background: rgba(0, 0, 0, 0.9); /* Semi-transparent background */
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transform: translateX(-100%); /* Initially hidden off the screen */
+    transform: translateX(-100%);
     transition: transform 0.3s ease;
-    z-index: 1500; /* High z-index to ensure it's above other content */
 }
 
-
 .side-menu.open {
-    transform: translateX(0); /* Moves into view when 'open' */
+    transform: translateX(0);
 }
 
 .side-menu button {
