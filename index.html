@@ -3,149 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raspberry Pi Project</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Home | Raspberry Pi Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="home.css">
 </head>
 <body>
-    <!-- Black bars -->
-    <div id="topBar"></div>
-    <div id="bottomBar"></div>
 
-    <!-- Menu Toggle Button -->
-    <div id="menuToggle" onclick="toggleMenu()">☰</div>
-
-    <!-- Profile/Login Icon -->
-    <div id="loginIcon" onclick="showLogin()">
-        <img src="images/Default_pfp.svg.png" alt="Profile">
+    <!-- Logo -->
+    <div class="logo" onclick="location.href='index.html'">
+        <div class="sentry">SENTRY</div>
+        <div class="security">SECURITY</div>
     </div>
 
-    <!-- Home Screen -->
-    <div id="homeScreen" class="center-screen">
-        <h1><span class="welcome">Welcome to the</span> <span class="project-name">Raspberry Pi Project</span></h1>
-        <p>Discover the innovation behind our <strong>Sentry Security Camera</strong>. With real-time camera feeds, smart activation modes, and advanced features, you’ll experience a new level of security at your fingertips. Step into the future of intelligent security technology.</p>
-        <div class="button-container">
-            <button class="home-button" onclick="goToCameraFeed()">View Camera Feed</button>
-            <button class="home-button" onclick="toggleMenu()">Open Menu</button>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Welcome to The</h1>
+            <h1>Rasberry Pi Project</h1>
+            <p>Explore the innovation and technology behind our intelligent security system.</p>
+            <a href="#features" class="scroll-down">Learn more</a>
         </div>
-    </div>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+    </section>
 
-    <!-- Sliding Side Menu for Navigation -->
+    <!-- Sidebar Menu -->
     <div id="sideMenu">
-        <button onclick="goToCameraFeed()" ontouchstart="goToCameraFeed()">📷 View Camera Feed</button>
-        <button onclick="activateMode(1)" ontouchstart="activateMode(1)">NCNN Mode</button>
-        <button onclick="activateMode(2)" ontouchstart="activateMode(2)">Laser Mode</button>
-        <button onclick="activateMode(3)" ontouchstart="activateMode(3)">Camera Stream</button>
-        <button onclick="activateMode(4)" ontouchstart="activateMode(4)">Client</button>
-        <button onclick="activateMode(5)" ontouchstart="activateMode(5)">STOP</button>
+        <button onclick="location.href='camerafeed.html'">📷 View Camera Feed</button>
+        <button onclick="location.href='meet.html'">Meet The Team</button>
+        <button onclick="location.href='buying.html'">Product</button>
+        <button onclick="location.href='features.html'">Project Features</button>
+        <button onclick="location.href='faq.html'">FAQ</button>
+        <button onclick="location.href='about.html'">About Me</button>
+        <button onclick="location.href='contact.html'">Contact</button>
+        <div class="login-icon">
+            <img src="images/Default_pfp.svg.png" alt="Profile">
+            <span>Login</span>
+        </div>
     </div>
 
-    <!-- Camera Feed Section -->
-    <div id="cameraFeed" style="display:none;" class="center-screen">
-        <h2>Live Camera Feed</h2>
-        <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" />
-        
-        <!-- Mode Buttons -->
-        <div class="mode-buttons">
-            <button onclick="activateMode(1)" ontouchstart="activateMode(1)">1</button>
-            <button onclick="activateMode(2)" ontouchstart="activateMode(2)">2</button>
-            <button onclick="activateMode(3)" ontouchstart="activateMode(3)">3</button>
-            <button onclick="activateMode(4)" ontouchstart="activateMode(4)">4</button>
-            <button onclick="activateMode(5)" ontouchstart="activateMode(5)">5</button>
-        </div>
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <h2>About This Project</h2>
+        <p>
+            Discover the innovation behind our <strong>Sentry Security Camera</strong>. With real-time camera feeds, smart activation modes, and advanced features, you’ll experience a new level of security at your fingertips. Step into the future of intelligent security technology.
+        </p>
+    </section>
 
-        <!-- Control Buttons -->
-        <div class="control-buttons">
-            <h3>Camera Controls</h3>
-            <div class="arrow-keys">
-                <button class="arrow-key" onmousedown="startContinuousKey('w')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('w')" ontouchend="stopContinuousKey()">▲</button>
-                <button class="arrow-key" onmousedown="startContinuousKey('a')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('a')" ontouchend="stopContinuousKey()">◄</button>
-                <button class="arrow-key" onmousedown="startContinuousKey('s')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('s')" ontouchend="stopContinuousKey()">▼</button>
-                <button class="arrow-key" onmousedown="startContinuousKey('d')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('d')" ontouchend="stopContinuousKey()">►</button>
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <h2>Key Features</h2>
+        <div class="feature-cards">
+            <div class="feature-card">
+                <i class="fas fa-video"></i>
+                <h3>Live Streaming</h3>
+                <p>View live camera feed with real-time updates directly from your Raspberry Pi.</p>
             </div>
-
-            <h3>Laser Controls</h3>
-            <button class="laser-button" onmousedown="startContinuousKey('p')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('p')" ontouchend="stopContinuousKey()">Laser</button>
-            <button class="laser-button" onmousedown="startContinuousKey('i')" onmouseup="stopContinuousKey()" onmouseleave="stopContinuousKey()" ontouchstart="startContinuousKey('i')" ontouchend="stopContinuousKey()">Random</button>
+            <div class="feature-card">
+                <i class="fas fa-bullseye"></i>
+                <h3>Laser Control</h3>
+                <p>Interact with your surroundings through remote-controlled laser functions.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Motion Detection</h3>
+                <p>Advanced motion detection for added security and monitoring.</p>
+            </div>
         </div>
+    </section>
 
-        <!-- Back Home Button -->
-        <button class="back-home-button" onclick="goToHome()">Back to Home</button>
-    </div>
+    <!-- Testimonial Section -->
+    <section id="testimonial">
+        <blockquote>
+            "This project redefines home security, providing real-time control at your fingertips."
+        </blockquote>
+        <cite>- A satisfied user</cite>
+    </section>
 
-    <!-- JavaScript for handling view, mode switching, and button hold actions -->
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <h2>Stay Updated</h2>
+        <p>Sign up to receive the latest updates on this project and other innovations!</p>
+        <form action="subscribe" method="POST">
+            <input type="email" placeholder="Enter your email" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </section>
+
+    <!-- Social Links Section -->
+    <section id="socialLinks" class="social-links-section">
+        <h3>Connect with Me</h3>
+        <div class="social-icons">
+            <a href="https://github.com/Ahmaddbaig" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://twitter.com/yourusername" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        </div>
+    </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+            <p>Follow us: <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/">LinkedIn</a> | <a href="#">Twitter</a> | <a href="#">Facebook</a></p>
+        </footer>
+
+    <!-- JavaScript for Sidebar Toggle -->
     <script>
-        let keyPressInterval; // Interval for sending continuous key press
-        const activeKeys = {}; // Object to track which keys are currently active
-
-        function isCameraFeedVisible() {
-            const cameraFeed = document.getElementById('cameraFeed');
-            return cameraFeed.style.display === 'flex' || cameraFeed.style.display === 'block';
-        }
-
-        function goToCameraFeed() {
-            console.log("Switching to camera feed"); // Debugging log
-            document.getElementById('homeScreen').style.display = 'none';
-            document.getElementById('cameraFeed').style.display = 'flex';
-        }
-
-        function goToHome() {
-            console.log("Returning to home screen"); // Debugging log
-            document.getElementById('cameraFeed').style.display = 'none';
-            document.getElementById('homeScreen').style.display = 'flex';
-        }
-
-        function sendKey(key) {
-            // Sends a single key press command
-            fetch("https://activationmode.share.zrok.io/key_input", {  // Use your Flask server's URL
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ key: key })
-            })
-            .then(response => response.json())
-            .then(data => console.log(`Key ${key} sent:`, data.status))
-            .catch(error => console.error("Error:", error));
-        }
-
-        function startContinuousKey(key) {
-            clearInterval(keyPressInterval); // Stop any ongoing interval before starting a new one
-            keyPressInterval = setInterval(() => { // Send the key continuously every 100ms while held down
-                sendKey(key);
-            }, 100); // Adjust the interval duration as needed
-        }
-
-        function stopContinuousKey() {
-            clearInterval(keyPressInterval); // Clears the interval to stop sending the key
-        }
-
-        // Keyboard event listeners for continuous movement
-        document.addEventListener("keydown", function(event) {
-            if (!isCameraFeedVisible()) return; // Only proceed if camera feed is visible
-
-            const key = event.key.toLowerCase();
-            if (!activeKeys[key]) {
-                activeKeys[key] = true; // Mark key as active
-                startContinuousKey(key);
-            }
-        });
-
-        // Stop the continuous key press when the key is released
-        document.addEventListener("keyup", function(event) {
-            const key = event.key.toLowerCase();
-            activeKeys[key] = false; // Mark key as inactive
-            stopContinuousKey();
-        });
-
-        // Function to activate a mode
-        function activateMode(mode) {
-            fetch(`https://activationmode1.share.zrok.io/activate_mode/${mode}`, {  // Use your Flask server's URL
-                method: "POST"
-            })
-            .then(response => response.json())
-            .then(data => console.log(`Mode ${mode} activated:`, data.status))
-            .catch(error => console.error("Error:", error));
+        function toggleMenu() {
+            const sideMenu = document.getElementById("sideMenu");
+            sideMenu.classList.toggle("open");
         }
     </script>
-
-    <script src="script.js"></script>
 </body>
 </html>
