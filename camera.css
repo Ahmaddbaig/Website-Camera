@@ -3,26 +3,38 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
 }
 
 /* General Body Styling */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    font-family: 'Arial', sans-serif;
+    background: url('images/hexagon-pattern-modern-black-abstract-background_1151483-65958.avif') no-repeat center center fixed;
+    background-size: cover;
+    color: #333;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    color: #333;
+    position: relative;
 }
 
-/* Logo Styling */
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay for better text visibility */
+    z-index: -1;
+}
+
 .logo {
     position: fixed;
     top: 20px;
     left: 20px;
     cursor: pointer;
     z-index: 5;
-    text-align: center;
 }
 
 .sentry {
@@ -41,20 +53,16 @@ body {
     display: block;
 }
 
-/* Hamburger Menu Button */
 .hamburger {
     position: fixed;
     top: 20px;
     right: 20px;
     font-size: 24px;
-    color: #333;
-    cursor: pointer;
     background-color: rgba(255, 255, 255, 0.9);
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, transform 0.3s;
-    z-index: 5;
+    cursor: pointer;
 }
 
 .hamburger:hover {
@@ -63,7 +71,6 @@ body {
     transform: scale(1.1);
 }
 
-/* Sidebar Menu Styling */
 .side-menu {
     position: fixed;
     top: 0;
@@ -78,8 +85,8 @@ body {
     padding-top: 60px;
     padding-left: 20px;
     z-index: 10;
-    transition: right 0.3s ease;
     box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.3);
+    transition: right 0.3s ease;
 }
 
 .side-menu.open {
@@ -96,14 +103,12 @@ body {
     font-weight: 600;
     width: 100%;
     text-align: left;
-    transition: color 0.3s;
 }
 
 .side-menu button:hover {
     color: #e63946;
 }
 
-/* Main Content Styling */
 .center-screen {
     margin: 100px auto;
     display: flex;
@@ -113,17 +118,38 @@ body {
     padding: 20px;
 }
 
-/* Camera Feed Styling */
-.camera-feed {
-    width: 80%;
-    max-width: 700px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    margin: 20px 0;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+.tv-frame {
+    background-color: #1b1b1b;
+    width: 85%;
+    max-width: 750px;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Mode and Control Buttons Styling */
+.tv-inner-frame {
+    background-color: #333;
+    padding: 10px;
+    border-radius: 15px;
+    width: 100%;
+}
+
+.tv-screen {
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #000;
+    box-shadow: inset 0px 5px 15px rgba(0, 0, 0, 0.7);
+}
+
+.camera-feed {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+}
+
 .mode-buttons, .control-buttons {
     display: flex;
     gap: 10px;
@@ -140,14 +166,14 @@ body {
     background-color: #e63946;
     color: white;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .mode-buttons button:hover, .control-buttons button:hover {
     background-color: #d02735;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 
-/* Arrow and Laser Control Buttons */
 .control-buttons {
     margin-top: 30px;
     text-align: center;
@@ -173,7 +199,6 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .arrow-key:hover, .laser-button:hover {
@@ -189,14 +214,12 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .back-home-button:hover {
     background-color: #555;
 }
 
-/* Footer */
 footer {
     background-color: #1d3557;
     color: white;
@@ -229,11 +252,6 @@ footer a:hover {
     transform: scale(1.1);
 }
 
-/* For spacing when the footer is fixed */
-.main-content {
-    padding-bottom: 60px; /* Adjust padding based on footer height */
-}
-/* Responsive Design Adjustments */
 @media (max-width: 768px) {
     .logo .sentry {
         font-size: 2em;
@@ -242,4 +260,22 @@ footer a:hover {
     .side-menu button {
         font-size: 16px;
     }
+}
+
+.fullscreen-button {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #1d3557;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.fullscreen-button:hover {
+    background-color: #457b9d;
 }
