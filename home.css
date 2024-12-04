@@ -4,16 +4,16 @@
     padding: 0;
     box-sizing: border-box;
     scroll-behavior: smooth;
- }
- 
- body {
+}
+
+body {
     font-family: Arial, sans-serif;
     color: #333;
     overflow-x: hidden;
- }
- 
- /* Logo Section */
- .logo {
+}
+
+/* Logo Section */
+.logo {
     position: fixed;
     top: 20px;
     left: 20px;
@@ -22,31 +22,31 @@
     z-index: 5;
     cursor: pointer;
     transition: transform 0.3s;
- }
- 
- .logo:hover {
+}
+
+.logo:hover {
     transform: scale(1.05);
- }
- 
- .logo .sentry {
+}
+
+.logo .sentry {
     font-family: 'Playfair Display', serif;
     font-size: 2.5em;
     font-weight: 900;
     letter-spacing: 0.05em;
     line-height: 1;
- }
- 
- .logo .security {
+}
+
+.logo .security {
     font-family: 'Roboto', sans-serif;
     font-size: 1em;
     font-weight: 300;
     letter-spacing: 0.3em;
     margin-top: 5px;
     display: block;
- }
- 
- /* Hero Section */
- .hero-section {
+}
+
+/* Hero Section */
+.hero-section {
     height: 100vh;
     background-image: url('images/oxa-roxa-9naPgAUBo2g-unsplash.jpg'); /* Replace with your image path */
     background-size: cover;
@@ -59,9 +59,9 @@
     text-align: center;
     padding: 20px;
     overflow: hidden;
- }
- 
- .hero-overlay {
+}
+
+.hero-overlay {
     background: rgba(0, 0, 0, 0.5);
     position: absolute;
     top: 0;
@@ -70,49 +70,49 @@
     height: 100%;
     z-index: 1;
     animation: fadeIn 1.5s ease;
- }
- 
- .hero-content {
+}
+
+.hero-content {
     z-index: 2;
     max-width: 800px;
     opacity: 0;
     animation: fadeInUp 1s ease forwards 0.5s;
- }
- 
- @keyframes fadeIn {
+}
+
+@keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
- }
- 
- @keyframes fadeInUp {
+}
+
+@keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
- }
- 
- .hero-content h1 {
+}
+
+.hero-content h1 {
     font-size: 3em;
     font-weight: bold;
     margin-bottom: 20px;
     color: #fff;
     text-transform: uppercase;
- }
- 
- .hero-content p {
+}
+
+.hero-content p {
     font-size: 1.2em;
     color: #e0e0e0;
     margin-bottom: 40px;
- }
- 
- .scroll-down {
+}
+
+.scroll-down {
     color: #e63946;
     font-size: 1.2em;
     cursor: pointer;
     text-decoration: none;
     animation: fadeInUp 1s ease forwards 1s;
- }
- 
- /* Full-Screen Sidebar */
- #sideMenu {
+}
+
+/* Full-Screen Sidebar */
+#sideMenu {
     position: fixed;
     top: 0;
     right: 0;
@@ -128,13 +128,13 @@
     transform: translateX(100%);
     transition: transform 0.3s ease; /* Slide-in effect */
     box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.3);
- }
- 
- #sideMenu.open {
+}
+
+#sideMenu.open {
     transform: translateX(0); /* When open, covers full screen */
- }
- 
- #sideMenu button, .login-icon {
+}
+
+#sideMenu button {
     background: none;
     color: #ffffff;
     font-size: 18px;
@@ -146,30 +146,14 @@
     transition: color 0.3s;
     width: 100%;
     margin-bottom: 10px;
- }
- 
- #sideMenu button:hover {
+}
+
+#sideMenu button:hover {
     color: #e63946;
- }
- 
- .login-icon {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 20px;
-    font-size: 16px;
-    cursor: pointer;
- }
- 
- .login-icon img {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: 2px solid #e63946;
- }
- 
- /* Hamburger Menu Button */
- .hamburger {
+}
+
+/* Hamburger Menu Button */
+.hamburger {
     position: fixed;
     top: 20px;
     right: 20px;
@@ -182,54 +166,54 @@
     border-radius: 5px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, transform 0.3s;
- }
- 
- .hamburger:hover {
+}
+
+.hamburger:hover {
     background-color: #e63946;
     color: #fff;
     transform: scale(1.1);
- }
- 
- /* About Section */
- .about-section {
+}
+
+/* About Section */
+.about-section {
     padding: 50px 20px;
     text-align: center;
     background: #f4f4f9;
- }
- 
- .about-section h2 {
+}
+
+.about-section h2 {
     font-size: 2em;
     margin-bottom: 20px;
     color: #1d3557;
- }
- 
- .about-section p {
+}
+
+.about-section p {
     font-size: 1.1em;
     color: #555;
     line-height: 1.6;
- }
- 
- /* Features Section */
- .features-section {
+}
+
+/* Features Section */
+.features-section {
     padding: 50px 20px;
     background: #ffffff;
     text-align: center;
- }
- 
- .features-section h2 {
+}
+
+.features-section h2 {
     font-size: 2em;
     margin-bottom: 30px;
     color: #1d3557;
- }
- 
- .feature-cards {
+}
+
+.feature-cards {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
- }
- 
- .feature-card {
+}
+
+.feature-card {
     background: #f4f4f9;
     width: 280px;
     padding: 20px;
@@ -237,32 +221,118 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
- }
- 
- .feature-card:hover {
+}
+
+.feature-card:hover {
     transform: scale(1.05);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
- }
- 
- .feature-card i {
+}
+
+.feature-card i {
     font-size: 2.5em;
     color: #e63946;
     margin-bottom: 15px;
- }
- 
- .feature-card h3 {
+}
+
+.feature-card h3 {
     font-size: 1.5em;
     color: #1d3557;
     margin-bottom: 10px;
- }
- 
- .feature-card p {
+}
+
+.feature-card p {
     font-size: 1em;
     color: #666;
- }
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .feature-cards {
+        flex-direction: column;
+    }
  
- /* Testimonial Section */
- #testimonial {
+    .feature-card {
+        width: 100%;
+    }
+ }
+
+/* Video Section */
+.full-width-video-section {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.video-header {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.video-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.video-container {
+    flex: 0 1 calc(50% - 20px);
+    max-width: calc(50% - 20px);
+    text-align: center;
+}
+
+.video-container video {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.video-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+}
+
+/* Video Container Styling */
+.loop-video-container {
+    display: flex; /* Center the video */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%; /* Full-width section */
+  }
+  
+  /* Video Styling */
+  .loop-video-container video {
+    width: 50%; /* Reduce video size to half of its container */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Optional: rounded corners */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
+  }
+  /* Section Styling */
+.loop-video-section {
+    width: 100%;
+    background-color: #ffffff; /* White background */
+    padding: 20px 0; /* Add some vertical space */
+    text-align: center;
+  }
+  
+  .video-header {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+@media (max-width: 768px) {
+    .video-container {
+        flex: 0 1 100%;
+    }
+}
+/* Testimonial Section */
+#testimonial {
     padding: 50px 20px;
     background: #f4f4f9;
     text-align: center;
@@ -346,281 +416,25 @@
     color: #e63946;
  }
  
- /* Responsive Design */
- @media (max-width: 768px) {
-    .feature-cards {
-        flex-direction: column;
-    }
- 
-    .feature-card {
-        width: 100%;
-    }
- }
- /* Footer */
- footer {
+/* Footer */
+footer {
     background-color: #1d3557;
     color: white;
     text-align: center;
     padding: 20px;
     font-size: 0.9em;
-    margin-top: 40px;
- }
- 
- footer p {
+}
+
+footer p {
     margin-bottom: 10px;
- }
- 
- footer a {
+}
+
+footer a {
     color: #e63946;
     text-decoration: none;
     transition: color 0.3s;
- }
- 
- footer a:hover {
-    color: #f4a261;
- }
- 
- /* Media Queries */
- @media (max-width: 768px) {
-    .hero-content h1 {
-        font-size: 2em;
-    }
-    .logo .sentry {
-        font-size: 2em;
-    }
-    .modal-content {
-        width: 90%;
-        padding: 20px;
-    }
- }
+}
 
- /* Updated Video Section Styling */
-.video-section {
-   display: flex; /* Align videos horizontally */
-   justify-content: center; /* Center videos */
-   gap: 20px; /* Space between videos */
-   padding: 20px;
-   flex-wrap: wrap; /* Allow videos to wrap on small screens */
-   background-color: #121212; /* Dark background for contrast */
- }
- 
- .video-container {
-   position: relative;
-   width: 100%;
-   max-width: 600px; /* Adjust max width for better visibility */
-   border-radius: 10px;
-   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-   overflow: hidden;
- }
- 
- .video-container video {
-   width: 100%; /* This scales the video width to the container */
-   max-width: 700px; /* Increase this to make the video larger */
-   border-radius: 8px; /* Optional: Adjust border-radius */
-   cursor: pointer;
- }
- 
- .video-overlay {
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-   color: white;
-   text-align: center;
-   border-radius: 10px;
-   opacity: 0; /* Default: overlay is hidden */
-   transition: opacity 0.3s; /* Smooth fade-in/out effect */
- }
- 
- .video-container:hover .video-overlay {
-   opacity: 1; /* Show overlay on hover */
- }
- 
- .video-title {
-   font-size: 1.5em;
-   font-weight: bold;
-   margin: 0;
- }
- 
- .video-description {
-   font-size: 1em;
-   margin-top: 10px;
-   padding: 0 10px;
- }
- 
- /* Responsive adjustments for smaller screens */
- @media (max-width: 900px) {
-   .video-container {
-     max-width: 100%; /* Full width on small screens */
-   }
- 
-   .video-title {
-     font-size: 1.2em;
-   }
- 
-   .video-description {
-     font-size: 0.9em;
-   }
- }
- /* New Section Styling */
- .video-display-section {
-   display: flex;
-   justify-content: center;
-   gap: 20px;
-   padding: 20px;
-   background-color: white; /* White background */
-   flex-wrap: wrap; /* Allow videos to wrap on smaller screens */
- }
- 
- .video-display-container {
-   position: relative;
-   width: 100%;
-   max-width: 600px; /* Adjust max width for better visibility */
-   border-radius: 10px;
-   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-   overflow: hidden;
- }
- 
- .video-display-container video {
-   width: 100%; /* Make video take full width */
-   border-radius: 10px; /* Add rounded corners */
-   cursor: pointer; /* Indicate clickability */
- }
- 
- .video-display-overlay {
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-   color: white;
-   text-align: center;
-   border-radius: 10px;
-   opacity: 0; /* Default: overlay is hidden */
-   transition: opacity 0.3s; /* Smooth fade-in/out effect */
- }
- 
- .video-display-container:hover .video-display-overlay {
-   opacity: 1; /* Show overlay on hover */
- }
- 
- .video-display-title {
-   font-size: 1.5em;
-   font-weight: bold;
-   margin: 0;
- }
- 
- .video-display-description {
-   font-size: 1em;
-   margin-top: 10px;
-   padding: 0 10px;
- }
- 
- /* Responsive adjustments for smaller screens */
- @media (max-width: 768px) {
-   .video-display-container {
-     max-width: 100%; /* Full width on small screens */
-   }
- 
-   .video-display-title {
-     font-size: 1.2em;
-   }
- 
-   .video-display-description {
-     font-size: 0.9em;
-   }
- }
- /* Section Styling */
- .full-width-video-section {
-   width: 100%; /* Full width of the page */
-   background-color: #ffffff; /* White background */
-   padding: 10px 0; /* Top and bottom spacing */
-   text-align: center; /* Center-align the header */
- }
- 
- .video-header {
-   font-size: 3em; /* Large header */
-   margin-bottom: 30px; /* Space below the header */
-   color: #333; /* Dark gray text */
- }
- 
- /* Video Row Styling */
- .video-row {
-   display: flex; /* Align videos side by side */
-   justify-content: space-between; /* Space out the videos */
-   gap: 2px; /* Add spacing between videos */
-   width: 100%; /* Full width of the row */
-   padding: 0 10px; /* Add slight padding */
-   box-sizing: border-box;
- }
- 
- /* Video Container Styling */
- .video-container {
-   flex: 1; /* Each video takes up equal space */
-   max-width: 50%; /* Limit each video to half the width */
-   overflow: hidden; /* Prevent overflow issues */
-   display: flex;
-   justify-content: center; /* Center the video horizontally */
-   align-items: center; /* Center the video vertically */
- }
- 
- .video-container video {
-   width: 100%; /* Video takes up full container width */
-   height: auto; /* Maintain aspect ratio */
-   border-radius: 8px; /* Optional: rounded corners */
-   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for design */
-   cursor: pointer; /* Indicate playability */
- }
- 
- /* Responsive Design */
- @media (max-width: 768px) {
-   .video-row {
-     flex-direction: column; /* Stack videos vertically */
-   }
- 
-   .video-container {
-     max-width: 100%; /* Full width for smaller screens */
-   }
- }
- 
- /* Section Styling */
- .loop-video-section {
-   width: 100%;
-   background-color: #ffffff; /* White background */
-   padding: 20px 0; /* Add some vertical space */
-   text-align: center;
- }
- 
- .video-header {
-   font-size: 2em;
-   margin-bottom: 20px;
-   color: #333;
- }
- 
- /* Video Container Styling */
- .loop-video-container {
-   display: flex; /* Center the video */
-   justify-content: center;
-   align-items: center;
-   overflow: hidden;
-   width: 100%; /* Full-width section */
- }
- 
- /* Video Styling */
- .loop-video-container video {
-   width: 50%; /* Reduce video size to half of its container */
-   height: auto; /* Maintain aspect ratio */
-   border-radius: 8px; /* Optional: rounded corners */
-   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
- }
+footer a:hover {
+    color: #f4a261;
+}
