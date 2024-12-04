@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | Raspberry Pi Project</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="CSS/home.css">
 </head>
 <body>
 
     <!-- Logo -->
-    <div class="logo" onclick="location.href='index.html'">
+    <div class="logo" onclick="location.href='other.html'">
         <div class="sentry">SENTRY</div>
         <div class="security">SECURITY</div>
     </div>
@@ -29,15 +29,15 @@
 
     <!-- Sidebar Menu -->
     <div id="sideMenu">
-        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='other.html'">Home</button>
         <button onclick="location.href='camerafeed.html'">📷 View Camera Feed</button>
         <button onclick="location.href='meet.html'">Meet The Team</button>
         <button onclick="location.href='buying.html'">Product</button>
         <button onclick="location.href='features.html'">Project Features</button>
         <button onclick="location.href='faq.html'">FAQ</button>
-        <button onclick="location.href='about.html'">About Me</button>
         <button onclick="location.href='contact.html'">Contact</button>
         <button onclick="location.href='login.html'">Login </button>
+        <button onclick="location.href='index.html'">DEMO Page</button>
     </div>
 
     <!-- About Section -->
@@ -47,6 +47,37 @@
             Discover the innovation behind our <strong>Sentry Security Camera</strong>. With real-time camera feeds, smart activation modes, and advanced features, you’ll experience a new level of security at your fingertips. Step into the future of intelligent security technology.
         </p>
     </section>
+
+    <section class="loop-video-section">
+        <h2 class="video-header">Our Product in Action</h2>
+        <div class="loop-video-container">
+          <video autoplay loop muted playsinline>
+            <source src="images/tracking.mov" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </section>
+  
+      <section class="full-width-video-section">
+        <h2 class="video-header">Demo Videos</h2>
+        
+        <div class="video-row">
+          <!-- Video 1 -->
+          <div class="video-container">
+            <video controls>
+              <source src="images/1204.mov" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <!-- Video 2 -->
+          <div class="video-container">
+            <video controls>
+              <source src="images/DEMO.mov" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </section>
 
     <!-- Features Section -->
     <section id="features" class="features-section">
