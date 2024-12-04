@@ -17,6 +17,14 @@
   animation: fadeIn 1.5s ease forwards;
 }
 
+.contact-header {
+  font-size: 2.5em;
+  color: #333;
+  text-align: center;
+  margin-bottom: 40px; /* Adds spacing between the header and team members */
+  position: relative; /* Centers the header within the section */
+}
+
 .team-member {
   background: #ffffff;
   width: 300px;
@@ -474,163 +482,16 @@ span {
   background-color: #0056b3;
 }
 
-/* Updated Video Section Styling */
-.video-section {
-  display: flex; /* Align videos horizontally */
-  justify-content: center; /* Center videos */
-  gap: 20px; /* Space between videos */
-  padding: 20px;
-  flex-wrap: wrap; /* Allow videos to wrap on small screens */
-  background-color: #121212; /* Dark background for contrast */
-}
-
-.video-container {
-  position: relative;
-  width: 100%;
-  max-width: 600px; /* Adjust max width for better visibility */
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  overflow: hidden;
-}
-
-.video-container video {
-  width: 100%; /* This scales the video width to the container */
-  max-width: 700px; /* Increase this to make the video larger */
-  border-radius: 8px; /* Optional: Adjust border-radius */
-  cursor: pointer;
-}
-
-.video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-  color: white;
-  text-align: center;
-  border-radius: 10px;
-  opacity: 0; /* Default: overlay is hidden */
-  transition: opacity 0.3s; /* Smooth fade-in/out effect */
-}
-
-.video-container:hover .video-overlay {
-  opacity: 1; /* Show overlay on hover */
-}
-
-.video-title {
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: 0;
-}
-
-.video-description {
-  font-size: 1em;
-  margin-top: 10px;
-  padding: 0 10px;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 900px) {
-  .video-container {
-    max-width: 100%; /* Full width on small screens */
-  }
-
-  .video-title {
-    font-size: 1.2em;
-  }
-
-  .video-description {
-    font-size: 0.9em;
-  }
-}
-/* New Section Styling */
-.video-display-section {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px;
-  background-color: white; /* White background */
-  flex-wrap: wrap; /* Allow videos to wrap on smaller screens */
-}
-
-.video-display-container {
-  position: relative;
-  width: 100%;
-  max-width: 600px; /* Adjust max width for better visibility */
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  overflow: hidden;
-}
-
-.video-display-container video {
-  width: 100%; /* Make video take full width */
-  border-radius: 10px; /* Add rounded corners */
-  cursor: pointer; /* Indicate clickability */
-}
-
-.video-display-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-  color: white;
-  text-align: center;
-  border-radius: 10px;
-  opacity: 0; /* Default: overlay is hidden */
-  transition: opacity 0.3s; /* Smooth fade-in/out effect */
-}
-
-.video-display-container:hover .video-display-overlay {
-  opacity: 1; /* Show overlay on hover */
-}
-
-.video-display-title {
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: 0;
-}
-
-.video-display-description {
-  font-size: 1em;
-  margin-top: 10px;
-  padding: 0 10px;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-  .video-display-container {
-    max-width: 100%; /* Full width on small screens */
-  }
-
-  .video-display-title {
-    font-size: 1.2em;
-  }
-
-  .video-display-description {
-    font-size: 0.9em;
-  }
-}
-/* Section Styling */
+/* Video Section Styling */
 .full-width-video-section {
   width: 100%; /* Full width of the page */
   background-color: #ffffff; /* White background */
-  padding: 10px 0; /* Top and bottom spacing */
-  text-align: center; /* Center-align the header */
+  padding: 20px 0; /* Top and bottom spacing */
+  text-align: center;
 }
 
 .video-header {
-  font-size: 3em; /* Large header */
+  font-size: 2.5em; /* Large header */
   margin-bottom: 30px; /* Space below the header */
   color: #333; /* Dark gray text */
 }
@@ -638,71 +499,88 @@ span {
 /* Video Row Styling */
 .video-row {
   display: flex; /* Align videos side by side */
-  justify-content: space-between; /* Space out the videos */
-  gap: 2px; /* Add spacing between videos */
+  flex-wrap: wrap; /* Allow videos to wrap on smaller screens */
+  justify-content: center; /* Center videos horizontally */
+  gap: 20px; /* Space between video containers */
+  padding: 0 20px; /* Add padding around the row */
   width: 100%; /* Full width of the row */
-  padding: 0 10px; /* Add slight padding */
-  box-sizing: border-box;
+  box-sizing: border-box; /* Include padding in the width calculation */
 }
 
 /* Video Container Styling */
 .video-container {
-  flex: 1; /* Each video takes up equal space */
-  max-width: 50%; /* Limit each video to half the width */
-  overflow: hidden; /* Prevent overflow issues */
-  display: flex;
-  justify-content: center; /* Center the video horizontally */
-  align-items: center; /* Center the video vertically */
+  flex: 0 1 calc(50% - 20px); /* Two videos per row, with space in between */
+  max-width: calc(50% - 20px); /* Limit video width to half the row */
+  text-align: center; /* Center-align titles and videos */
 }
 
 .video-container video {
-  width: 100%; /* Video takes up full container width */
+  width: 100%; /* Make the video fill the container */
   height: auto; /* Maintain aspect ratio */
   border-radius: 8px; /* Optional: rounded corners */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for design */
   cursor: pointer; /* Indicate playability */
 }
 
-/* Responsive Design */
+.video-title {
+  font-size: 1.2em; /* Medium-sized font */
+  font-weight: bold; /* Make the title bold */
+  margin-top: 10px; /* Add spacing between video and title */
+  color: #333; /* Dark gray text */
+}
+
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .video-row {
-    flex-direction: column; /* Stack videos vertically */
+  .video-container {
+      flex: 0 1 100%; /* Stack videos vertically on smaller screens */
+      max-width: 100%; /* Make videos full-width on small screens */
   }
 
-  .video-container {
-    max-width: 100%; /* Full width for smaller screens */
+  .video-title {
+      font-size: 1em; /* Adjust title size for mobile */
+  }
+}
+
+/* Small Mobile Screens */
+@media (max-width: 480px) {
+  .video-header {
+      font-size: 2em; /* Slightly smaller header on mobile */
+  }
+
+  .video-title {
+      font-size: 0.9em; /* Reduce font size for video titles */
   }
 }
 
 /* Section Styling */
 .loop-video-section {
-  width: 100%;
-  background-color: #ffffff; /* White background */
-  padding: 20px 0; /* Add some vertical space */
-  text-align: center;
+ width: 100%;
+ background-color: #ffffff; /* White background */
+ padding: 20px 0; /* Add some vertical space */
+ text-align: center;
 }
 
 .video-header {
-  font-size: 2em;
-  margin-bottom: 20px;
-  color: #333;
+ font-size: 2em;
+ margin-bottom: 20px;
+ color: #333;
 }
 
 /* Video Container Styling */
 .loop-video-container {
-  display: flex; /* Center the video */
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  width: 100%; /* Full-width section */
+ display: flex; /* Center the video */
+ justify-content: center;
+ align-items: center;
+ overflow: hidden;
+ width: 100%; /* Full-width section */
 }
 
 /* Video Styling */
 .loop-video-container video {
-  width: 50%; /* Reduce video size to half of its container */
-  height: auto; /* Maintain aspect ratio */
-  border-radius: 8px; /* Optional: rounded corners */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
+ width: 50%; /* Reduce video size to half of its container */
+ height: auto; /* Maintain aspect ratio */
+ border-radius: 8px; /* Optional: rounded corners */
+ box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
 }
 .floating-button {
   position: fixed;
@@ -1039,7 +917,14 @@ footer {
 .contact-header {
   font-size: 2.5em;
   color: #333;
-  margin-bottom: 20px; /* Adds spacing between the header and the cards */
+  margin-bottom: 20px; /* Adds spacing between the header and the content */
+  text-align: center; /* Centers the text horizontally */
+  margin-top: 0; /* Ensures no extra space above */
+  position: absolute; /* Positions it at the top */
+  top: 20px; /* Adjusts the position from the top */
+  left: 50%; /* Centers the header horizontally */
+  transform: translateX(-50%); /* Ensures proper centering */
+  z-index: 10; /* Ensures it is above other elements */
 }
 
 /* Card Container (Reused from Earlier Code) */
