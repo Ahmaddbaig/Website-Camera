@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meet the Team</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Roboto:wght@300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="meet.css"> <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="CSS/meet.css"> <!-- Link to the external CSS file -->
 </head>
 <body>
     <!-- Logo -->
@@ -27,9 +27,8 @@
 
     <!-- Sidebar Menu -->
     <div id="sideMenu">
-        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='other.html'">Home</button>
         <button onclick="location.href='camerafeed.html'">📷 View Camera Feed</button>
-        <button onclick="location.href='meet.html'">Meet The Team</button>
         <button onclick="location.href='buying.html'">Product</button>
         <button onclick="location.href='features.html'">Project Features</button>
         <button onclick="location.href='faq.html'">FAQ</button>
@@ -47,9 +46,15 @@
             <p>Software Developer</p>
         </div>
         <div class="team-member" onclick="openModal('usman')">
-            <img src="partner-photo.jpg" alt="Usman Naveed">
+            <img src="images/usman.jpg" alt="Usman Naveed">
             <h2>Usman Naveed</h2>
             <p>Co-Founder</p>
+        </div>
+        <div class="team-member" onclick="openModal('talha')">
+            <img src="images/talha.jpg" alt="Talha Khalil">
+            <h2>Talha Khalil</h2>
+            <p>Senior Director</p>
+            <p>Supply Chain Mangement</p>
         </div>
     </section>
 
@@ -91,10 +96,17 @@
             },
             usman: {
                 name: "Usman Naveed",
-                image: "partner-photo.jpg",
+                image: "images/usman.jpg",
                 biography: "Usman is an enthusiastic coder with a drive for creativity and problem-solving. His innovative spirit and collaborative mindset make him a valuable asset to the team.",
                 phone: "+1 646 987 6543",
                 email: "usman@example.com"
+            },
+            talha: {
+                name: "Talha Khalil",
+                image: "images/talha.jpg",
+                biography: "Talha is an enthusiastic coder with a drive for creativity and problem-solving. His innovative spirit and collaborative mindset make him a valuable asset to the team.",
+                phone: "+1 646 987 6543",
+                email: "talhakhalil703@gmail.com"
             }
         };
 
