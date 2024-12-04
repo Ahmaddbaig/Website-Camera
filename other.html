@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Sentry Security Camera</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Smooth scrolling behavior */
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+  </head>
+  <body>
+
+    <a href="stream.html" target="_blank" class="floating-button">
+      Go To Stream
+    </a>
+    <div class="banner" id="banner">
+      <p>For Demo purposes, Login feature has been disabled!</p>
+      <span class="close-btn" onclick="closeBanner()">×</span>
+    </div>
+
+    <!-- Header section -->
+    <header class="header">
+      <div class="logo">
+        <img src="images/sentry logo 2.png" alt="Logo" class="logo-image" />
+        <span>Your Private Personal</span>
+      </div>
+      <div class="header-buttons">
+        <a href="other.html" class="header-button">Professional</a>
+        <a href="login.html" class="header-button">Login</a>
+        <a href="#contact-section" class="header-button">Contact</a> <!-- Link to Contact Section -->
+      </div>
+    </header>
+
+
+    <section class="video-section">
+      <video autoplay muted loop class="background-video">
+        <source src="images/sentry vid (1).mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </section>
+
+    <!-- About Us section -->
+    <section class="about-us">
+      <div class="about">
+        <img src="images/sentry pic.jpg " class="pic" />
+        <div class="text">
+          <h2>Sentry MARK I</h2>
+          <h5>$49.99 | <span>2GB Ram | 64GB Memory</span></h5>
+          <p>The Advanced Sentry Security Camera offers robust and flexible security solutions, combining intelligent tracing and recording capabilities with fully manual control for precise vertical and horizontal movement. Featuring an integrated laser for targeted monitoring, the camera is accessible online, allowing remote viewing and secure access to recorded footage. This versatile system includes multiple modes, such as the powerful Sentry Mode, for automated, vigilant tracking. Designed for adaptability, it’s ideal for keeping an eye on critical areas, with intuitive controls and responsive features to suit any security need.</p>
+          <div class="data">
+            <a href="#" class="hire">Coming Soon</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-us">
+      <div class="about">
+        <img src="images/sentry pic.jpg" class="pic" />
+        <div class="text">
+          <h2>Sentry MARK II</h2>
+          <h5>$64.99 | <span>8GB Ram | 128GB Memory</span></h5>
+          <p>Mark II of Sentry Security Camera is even faster and more resilient than then previous model. With an increased memory of 128GB, and an 8GB Ram processor with real-time tracing. With incredible speed. Your active personnel protect your privacy.</p>
+          <div class="data">
+            <a href="#" class="hire">Coming Soon</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+
+    <section class="loop-video-section">
+      <h2 class="video-header">Our Product in Action</h2>
+      <div class="loop-video-container">
+        <video autoplay loop muted playsinline>
+          <source src="images/tracking.mov" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </section>
+
+    <section class="full-width-video-section">
+      <h2 class="video-header">Demo Videos</h2>
+      
+      <div class="video-row">
+        <!-- Video 1 -->
+        <div class="video-container">
+          <video controls>
+            <source src="images/Live_Demo_0929.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <!-- Video 2 -->
+        <div class="video-container">
+          <video controls>
+            <source src="images/Sentery_Security_Camera_Demo2.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </section>
+
+    
+       <!-- Team Section -->
+       <section id="team-section" class="team-container">
+        <div class="team-member" onclick="openModal('ahmad')">
+            <img src="images/IMG_4749.jpeg" alt="Ahmad Baig">
+            <h2>Ahmad Baig</h2>
+            <p>Co-Founder</p>
+            <p>Software Developer</p>
+        </div>
+        <div class="team-member" onclick="openModal('usman')">
+            <img src="images/usman.jpg" alt="Usman Naveed">
+            <h2>Usman Naveed</h2>
+            <p>Co-Founder</p>
+        </div>
+    </section>
+
+    <!-- Modal Pop-up -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <img id="modal-image" src="" alt="">
+            <div class="modal-text">
+                <h2 id="modal-name">Name</h2>
+                <p id="modal-biography">Biography text goes here...</p>
+                <div class="modal-contact">
+                    <p><span class="highlight">Phone:</span> <span id="modal-phone">N/A</span></p>
+                    <p><span class="highlight">Email:</span> <span id="modal-email">N/A</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+        <p>Follow us: <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/">LinkedIn</a> | <a href="#">Twitter</a> | <a href="#">Facebook</a></p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'flex' : 'none';
+        }
+
+        const teamMembers = {
+            ahmad: {
+                name: "Ahmad Baig",
+                image: "images/IMG_4749.jpeg",
+                biography: "Currently a student at Brooklyn College, Ahmad is pursuing a bachelor's degree in computer science. Recently, he discovered a strong interest in hardware and artificial intelligence, particularly in machine learning applications. His studies and projects have given him a unique perspective on the interaction between software and hardware, sparking a desire to explore this field further.",
+                phone: "+1 347 784 2377",
+                email: "ahmaddbaig@gmail.com"
+            },
+            usman: {
+                name: "Usman Naveed",
+                image: "images/usman.jpg",
+                biography: "Usman is an enthusiastic coder with a drive for creativity and problem-solving. His innovative spirit and collaborative mindset make him a valuable asset to the team.",
+                phone: "+1 646 987 6543",
+                email: "usman@example.com"
+            }
+        };
+
+        function openModal(member) {
+            const modal = document.getElementById("modal");
+            document.getElementById("modal-name").textContent = teamMembers[member].name;
+            document.getElementById("modal-image").src = teamMembers[member].image;
+            document.getElementById("modal-biography").textContent = teamMembers[member].biography;
+            document.getElementById("modal-phone").textContent = teamMembers[member].phone;
+            document.getElementById("modal-email").textContent = teamMembers[member].email;
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("modal");
+            modal.style.display = "none";
+        }
+    </script>
+    
+  </body>
+</html>
