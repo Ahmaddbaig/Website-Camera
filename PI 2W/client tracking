@@ -1,1 +1,195 @@
+import cv2
+from pigpio import pi
+from picamera2 import Picamera2
+import time
+from flask import Flask, render_template, Response
+import requests
+import numpy as np
 
+# Initialize Flask app
+app = Flask(__name__)
+
+# Initialize pigpio
+gpio = pi()
+
+# Set GPIO pins for servos
+pan_servo_pin = 13
+tilt_servo_pin = 12
+
+# Servo pulse width range
+SERVO_MIN_PULSE = 500   # Minimum pulse width in microseconds
+SERVO_MAX_PULSE = 2500  # Maximum pulse width in microseconds
+
+# Initial angles
+pan_angle = 95
+tilt_angle = 95
+
+# Function to convert angle to pulse width
+def angle_to_pulse_width(angle):
+    return int(SERVO_MIN_PULSE + (angle / 180) * (SERVO_MAX_PULSE - SERVO_MIN_PULSE))
+
+# Initialize servos to default position
+gpio.set_servo_pulsewidth(pan_servo_pin, angle_to_pulse_width(pan_angle))
+gpio.set_servo_pulsewidth(tilt_servo_pin, angle_to_pulse_width(tilt_angle))
+
+# Servo movement
+default_pan_step = 2
+default_tilt_step = 1
+
+# Tilt angle limits
+tilt_min_angle = 60
+tilt_max_angle = 120
+
+# Pan angle limits
+pan_left_limit = 30
+pan_right_limit = 150
+
+# Servo smoothing factor
+smoothing_factor = 0.5
+
+# Timeout duration
+last_detection_time = time.time()
+timeout_duration = 3  # 3 seconds to wait before scanning
+scanning = False
+scan_direction = 1  # Initial scanning direction (1 for right, -1 for left)
+
+# Threshold for detecting close faces
+really_close_face_threshold = 80000
+
+# Dead zone for vertical movement
+tilt_dead_zone = 20
+# Initialize Picamera
+picam2 = Picamera2()
+picam2.preview_configuration.main.size = (620, 480)  # Standard resolution
+picam2.preview_configuration.main.format = "RGB888"
+picam2.preview_configuration.controls.FrameRate = 120
+picam2.preview_configuration.align()
+picam2.configure("preview")
+picam2.start()
+
+# Windows server for YOLO
+WINDOWS_YOLO_SERVER = 'http://192.168.50.228:5002/detect'  # Update with your Windows machine IP
+
+def send_frame_to_windows_for_yolo(frame):
+    _, img_encoded = cv2.imencode('.jpg', frame)
+    response = requests.post(WINDOWS_YOLO_SERVER, data=img_encoded.tobytes())
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error communicating with Windows YOLO server.")
+        return None
+
+def smooth_servo_movement(current_angle, target_angle, step):
+    diff = target_angle - current_angle
+    move_step = smoothing_factor * diff
+    if abs(move_step) > step:
+        move_step = step if move_step > 0 else -step
+    return current_angle + move_step
+
+def move_servo_to_target(x, y, w, h):
+    global pan_angle, tilt_angle, scanning, default_pan_step, default_tilt_step
+
+    # Calculate center of the detected object
+    target_center_x = x + w // 2
+    target_center_y = y + h // 2
+
+    # Define the center of the frame
+    frame_center_x = 640 // 2
+    frame_center_y = 480 // 2
+
+    # Calculate offsets
+    offset_x = target_center_x - frame_center_x
+    offset_y = target_center_y - frame_center_y
+
+    # Exit scanning mode
+    scanning = False
+
+    # Adjust pan (horizontal movement)
+    if abs(offset_x) > 10:  # Horizontal threshold
+        if offset_x < 0:  # Object is to the left
+            pan_angle = smooth_servo_movement(pan_angle, pan_angle + default_pan_step, default_pan_step)
+        else:  # Object is to the right
+            pan_angle = smooth_servo_movement(pan_angle, pan_angle - default_pan_step, default_pan_step)
+
+    # Adjust tilt (vertical movement)
+    if abs(offset_y) > tilt_dead_zone:  # Vertical threshold
+        if offset_y < 0:  # Object is above center
+            tilt_angle = smooth_servo_movement(tilt_angle, tilt_angle + default_tilt_step, default_tilt_step)
+        elif offset_y > 0:  # Object is below center
+            tilt_angle = smooth_servo_movement(tilt_angle, tilt_angle - default_tilt_step, default_tilt_step)
+
+
+    # Ensure tilt stays within bounds
+    tilt_angle = max(tilt_min_angle, min(tilt_max_angle, tilt_angle))
+
+    # Ensure pan stays within bounds
+    pan_angle = max(pan_left_limit, min(pan_right_limit, pan_angle))
+
+    # Update servo positions
+    gpio.set_servo_pulsewidth(pan_servo_pin, angle_to_pulse_width(pan_angle))
+    gpio.set_servo_pulsewidth(tilt_servo_pin, angle_to_pulse_width(tilt_angle))
+
+    # Short delay for smoother movement
+    time.sleep(0.01)
+
+def scan_left_right_with_slow_tilt_down():
+    global pan_angle, tilt_angle, scan_direction
+    pan_angle += default_pan_step * scan_direction
+    if pan_angle >= pan_right_limit or pan_angle <= pan_left_limit:
+        scan_direction *= -1
+
+    tilt_angle -= default_tilt_step
+    if tilt_angle < tilt_min_angle:
+        tilt_angle = tilt_min_angle
+
+    gpio.set_servo_pulsewidth(pan_servo_pin, angle_to_pulse_width(pan_angle))
+    gpio.set_servo_pulsewidth(tilt_servo_pin, angle_to_pulse_width(tilt_angle))
+    time.sleep(0.05)
+
+def gen_frames():
+    global last_detection_time, scanning
+    while True:
+        frame = picam2.capture_array()
+
+        if frame.shape[2] == 4:
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2RGB)
+
+        # Send the frame to Windows for YOLO processing
+        detections = send_frame_to_windows_for_yolo(frame)
+
+        if detections:
+            for detection in detections:
+                x1, y1, x2, y2 = detection['x1'], detection['y1'], detection['x2'], detection['y2']
+                label = detection['class']
+
+                # Draw the bounding box and label
+                x, y, w, h = x1, y1, x2 - x1, y2 - y1
+                color = (255, 0, 0) if label == 'person' else (0, 255, 0)  # Blue for person, Green for cat
+                cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+                cv2.putText(frame, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
+
+                move_servo_to_target(x, y, w, h)
+                last_detection_time = time.time()
+
+        if time.time() - last_detection_time > timeout_duration:
+            print("No target detected, scanning...")
+            scanning = True
+
+        if scanning:
+            scan_left_right_with_slow_tilt_down()
+
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(host='192.168.50.227', port=5002)
