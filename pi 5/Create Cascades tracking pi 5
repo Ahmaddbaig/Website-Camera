@@ -1,0 +1,144 @@
+import cv2
+from adafruit_servokit import ServoKit
+from picamera2 import Picamera2
+import time
+from flask import Flask, render_template, Response
+
+# Initialize Flask app
+app = Flask(__name__)
+
+# Initialize the PCA9685 module with 16 channels
+kit = ServoKit(channels=16)
+
+# Set initial positions for pan and tilt servos (adjust these for your setup)
+pan_servo_channel = 0  # Servo channel for pan (left-right)
+tilt_servo_channel = 1  # Servo channel for tilt (up-down)
+
+# Initialize the servos to start at a neutral position
+pan_angle = 90  # Initial pan angle (neutral position)
+tilt_angle = 90  # Initial tilt angle (neutral position)
+kit.servo[pan_servo_channel].angle = pan_angle
+kit.servo[tilt_servo_channel].angle = tilt_angle
+
+# Tuning parameters
+pan_step = 2 
+tilt_step = 2  
+frame_center_x = 320 
+frame_center_y = 240 
+tolerance = 10 
+
+# Servo movement smoothing 
+smoothing_factor = 0.5
+
+# Set up the camera using picamera2
+picam2 = Picamera2()
+camera_config = picam2.create_preview_configuration(main={"size": (640, 480)})
+picam2.configure(camera_config)
+picam2.start()
+
+
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+upper_body_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_upperbody.xml')
+full_body_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
+
+def smooth_servo_movement(current_angle, target_angle, step):
+    # Smooth the servo movement to avoid jerky motions
+    diff = target_angle - current_angle
+    move_step = smoothing_factor * diff 
+    if abs(move_step) > step:
+        move_step = step if move_step > 0 else -step
+    return current_angle + move_step
+
+def move_servo_to_target(x, y, w, h):
+    global pan_angle, tilt_angle
+
+    # Calculate the target's center coordinates
+    target_center_x = x + w // 2
+    target_center_y = y + h // 2
+
+    # Check if the target is too far left or right and adjust the pan servo
+    if abs(target_center_x - frame_center_x) > tolerance:
+        if target_center_x < frame_center_x:
+            pan_angle = smooth_servo_movement(pan_angle, pan_angle + pan_step, pan_step)
+            print(f"Moving pan right: {pan_angle}")
+        else:
+            pan_angle = smooth_servo_movement(pan_angle, pan_angle - pan_step, pan_step)
+            print(f"Moving pan left: {pan_angle}")
+
+    # Check if the target is too far up or down and adjust the tilt servo
+    if abs(target_center_y - frame_center_y) > tolerance:
+        if target_center_y < frame_center_y:
+            tilt_angle = smooth_servo_movement(tilt_angle, tilt_angle - tilt_step, tilt_step)
+            print(f"Moving tilt up: {tilt_angle}")
+        else:
+            tilt_angle = smooth_servo_movement(tilt_angle, tilt_angle + tilt_step, tilt_step)
+            print(f"Moving tilt down: {tilt_angle}")
+
+    # Limit the servo angles 
+    pan_angle = max(0, min(180, pan_angle))
+    tilt_angle = max(0, min(180, tilt_angle))
+
+   
+    kit.servo[pan_servo_channel].angle = pan_angle
+    kit.servo[tilt_servo_channel].angle = tilt_angle
+    time.sleep(0.01)  # Small delay to allow the servo to move
+
+# Function to generate video frames for streaming
+def gen_frames():
+    while True:
+        # Capture frame-by-frame from picamera2
+        frame = picam2.capture_array()
+
+        
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Detect faces, upper body, and full body
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        upper_bodies = upper_body_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
+        full_bodies = full_body_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(100, 100))
+
+        # Prioritize detection: face > upper body > full body
+        if len(faces) > 0:
+            # Choose the largest face
+            largest_face = max(faces, key=lambda rect: rect[2] * rect[3])
+            x, y, w, h = largest_face
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            move_servo_to_target(x, y, w, h)
+
+        elif len(upper_bodies) > 0:
+            # Choose the largest upper body
+            largest_upper_body = max(upper_bodies, key=lambda rect: rect[2] * rect[3])
+            x, y, w, h = largest_upper_body
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            move_servo_to_target(x, y, w, h)
+
+        elif len(full_bodies) > 0:
+            # Choose the largest full body
+            largest_full_body = max(full_bodies, key=lambda rect: rect[2] * rect[3])
+            x, y, w, h = largest_full_body
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            move_servo_to_target(x, y, w, h)
+
+        else:
+            print("No target detected")
+
+        
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+
+       
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# Define the route for the main page
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(host='192.168.50.110', port=5000)
