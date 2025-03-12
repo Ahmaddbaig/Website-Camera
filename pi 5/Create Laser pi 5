@@ -1,0 +1,211 @@
+import cv2
+import numpy as np
+import time
+import curses
+from flask import Flask, Response, render_template, request
+from picamera2 import Picamera2
+from adafruit_servokit import ServoKit
+import threading
+import random
+
+# Initialize Flask app
+app = Flask(__name__)
+
+# Initialize the PCA9685 module with 16 channels for controlling servos and laser
+kit = ServoKit(channels=16)
+pan_servo_channel = 0  # Pan servo
+tilt_servo_channel = 1  # Tilt servo
+laser_channel = 2  # Channel for the laser
+
+# Set initial positions for pan and tilt servos
+pan_angle = 90
+tilt_angle = 90
+kit.servo[pan_servo_channel].angle = pan_angle
+kit.servo[tilt_servo_channel].angle = tilt_angle
+
+# Angle limits and step sizes for movement
+pan_min, pan_max = 30, 150
+tilt_min, tilt_max = 75, 120  # Adjusted tilt range with more room for downward movement
+pan_step = 1  # Reduced step size for smoother movements
+tilt_step = 1
+
+# Laser state and random movement flag
+laser_on = False  # Laser is off by default
+random_mode = False  # Flag to toggle between tracking and random movements
+
+# Initialize Picamera2
+picam2 = Picamera2()
+config = picam2.create_video_configuration(main={"size": (640, 480)})
+picam2.configure(config)
+picam2.start()
+
+# Function to control laser
+def control_laser(turn_on):
+    global laser_on
+    laser_on = turn_on
+    if laser_on:
+        kit.servo[laser_channel].angle = 180  # 180 to turn the laser ON
+        print("Laser is now ON")
+    else:
+        kit.servo[laser_channel].angle = None  # Set to None to disable PWM signal completely
+        print("Laser is now OFF")
+
+# Ensure the laser is off initially
+control_laser(False)
+
+# Function to listen for key presses and toggle laser or random mode
+def key_listener(stdscr):
+    global laser_on, random_mode
+    stdscr.nodelay(True)
+    while True:
+        key = stdscr.getch()
+        if key == ord('p'):  # Toggle laser on/off when "P" is pressed
+            control_laser(not laser_on)
+            time.sleep(0.2)  # Debounce delay
+        elif key == ord('i'):  # Toggle random movement mode when "I" is pressed
+            random_mode = not random_mode
+            print(f"Random mode {'enabled' if random_mode else 'disabled'}")
+            time.sleep(0.2)  # Debounce delay
+
+# Use threading for curses key listener
+def start_key_listener():
+    curses.wrapper(key_listener)
+
+# Start the key listener in a separate thread
+threading.Thread(target=start_key_listener, daemon=True).start()
+
+def detect_red_laser(frame):
+    """Detect the position of the red laser dot in the frame."""
+    hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)  # Convert to HSV color space
+    
+    # Define red color range in HSV (broadened range for better detection)
+    lower_red1 = np.array([0, 100, 100])
+    upper_red1 = np.array([10, 255, 255])
+    lower_red2 = np.array([160, 100, 100])
+    upper_red2 = np.array([180, 255, 255])
+    
+    # Create masks for red color and combine them
+    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+    mask = mask1 + mask2
+    
+    # Find contours of the red area
+    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # If any contours are detected, return the largest one (assumed to be the laser dot)
+    if contours:
+        largest_contour = max(contours, key=cv2.contourArea)
+        if cv2.contourArea(largest_contour) > 100:  # Minimum area to avoid noise
+            x, y, w, h = cv2.boundingRect(largest_contour)
+            return x + w // 2, y + h // 2  # Return center of the red dot
+    return None
+
+def smooth_move(current, target, step):
+    """Smoothly move towards the target angle."""
+    if abs(target - current) <= step:
+        return target
+    return current + step if target > current else current - step
+
+def move_servos_to_center(target_x, target_y, frame_width, frame_height):
+    """Adjust the servos to center the camera on the red dot."""
+    global pan_angle, tilt_angle
+
+    # Calculate offset from the center
+    offset_x = target_x - frame_width // 2
+    offset_y = target_y - frame_height // 2
+
+    # Threshold for fine movement control
+    pan_threshold = 15
+    tilt_threshold = 15
+
+    # Adjust pan (horizontal movement)
+    if abs(offset_x) > pan_threshold:
+        target_pan = pan_angle + pan_step if offset_x < 0 else pan_angle - pan_step
+        pan_angle = smooth_move(pan_angle, target_pan, pan_step)
+        pan_angle = max(pan_min, min(pan_max, pan_angle))
+        kit.servo[pan_servo_channel].angle = pan_angle
+
+    # Adjust tilt (vertical movement)
+    if abs(offset_y) > tilt_threshold:
+        target_tilt = tilt_angle + tilt_step if offset_y < 0 else tilt_angle - tilt_step
+        tilt_angle = smooth_move(tilt_angle, target_tilt, tilt_step)
+        tilt_angle = max(tilt_min, min(tilt_max, tilt_angle))
+        kit.servo[tilt_servo_channel].angle = tilt_angle
+
+def random_servo_movement():
+    """Make random horizontal and downward-biased servo movements with smoother transitions."""
+    global pan_angle, tilt_angle
+    # Horizontal movement with a larger range
+    target_pan = random.randint(pan_angle - 30, pan_angle + 30)
+    # Downward-biased vertical movement
+    target_tilt = random.randint(tilt_angle, tilt_angle + 15) if tilt_angle < tilt_max else tilt_angle
+
+    # Ensure target stays within limits
+    target_pan = max(pan_min, min(pan_max, target_pan))
+    target_tilt = max(tilt_min, min(tilt_max, target_tilt))
+
+    # Gradually move towards target
+    while pan_angle != target_pan or tilt_angle != target_tilt:
+        pan_angle = smooth_move(pan_angle, target_pan, pan_step)
+        tilt_angle = smooth_move(tilt_angle, target_tilt, tilt_step)
+        kit.servo[pan_servo_channel].angle = pan_angle
+        kit.servo[tilt_servo_channel].angle = tilt_angle
+        time.sleep(0.05)  # Delay to slow down the movement
+
+# Function to generate video frames for Flask streaming
+def gen_frames():
+    while True:
+        # Capture a frame from the camera
+        frame = picam2.capture_array()
+        
+        # Get frame dimensions
+        frame_height, frame_width = frame.shape[:2]
+        
+        if random_mode:
+            # In random movement mode, make playful movements
+            random_servo_movement()
+        else:
+            # Detect the red laser dot in the frame
+            laser_position = detect_red_laser(frame)
+            
+            if laser_position:
+                # Draw a circle around the detected laser dot
+                cv2.circle(frame, laser_position, 10, (0, 255, 0), 2)
+                # Move the servos to keep the laser in the center
+                move_servos_to_center(laser_position[0], laser_position[1], frame_width, frame_height)
+
+        # Encode the frame to JPEG for streaming
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+# Flask route for the video feed
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# Flask route for the home page
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# Flask control route for web interface
+@app.route('/control', methods=['POST'])
+def control():
+    if 'toggle_laser' in request.form:
+        control_laser(not laser_on)
+    elif 'toggle_random' in request.form:
+        global random_mode
+        random_mode = not random_mode
+    return ('', 204)
+
+if __name__ == '__main__':
+    try:
+        app.run(host='192.168.50.9', port=5000)
+    finally:
+        # Ensure the laser turns off and servos reset when the program exits
+        control_laser(False)
+        kit.servo[pan_servo_channel].angle = 90
+        kit.servo[tilt_servo_channel].angle = 90
+        print("Program exited, servos reset to initial position, laser turned off.")
