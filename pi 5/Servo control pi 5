@@ -1,0 +1,133 @@
+from flask import Flask, render_template, Response, request
+from adafruit_servokit import ServoKit
+from picamera2 import Picamera2
+import cv2
+import curses
+import threading
+
+app = Flask(__name__)
+
+# Initialize PCA9685 using the ServoKit class (with 16 channels)
+kit = ServoKit(channels=16)
+
+# Initialize servos on channels 0 and 1
+servo1 = kit.servo[0]
+servo2 = kit.servo[1]
+
+# Set the initial angles for both servos
+servo1.angle = 90  # Set to midpoint
+servo2.angle = 90  # Set to midpoint
+
+# Initialize Picamera2
+picam2 = Picamera2()
+config = picam2.create_video_configuration(main={"size": (640, 480)})
+picam2.configure(config)
+picam2.start()
+ 
+# Function to control servo positions
+def control_servo(servo, angle):
+    if angle < 0:
+        angle = 0
+    elif angle > 180:
+        angle = 180
+    servo.angle = angle
+
+# Function to control servos using the web interface
+@app.route('/control', methods=['POST'])
+def control():
+    if 'servo1_left' in request.form:
+        control_servo(servo1, servo1.angle - 5)
+    elif 'servo1_right' in request.form:
+        control_servo(servo1, servo1.angle + 5)
+    elif 'servo2_up' in request.form:
+        control_servo(servo2, servo2.angle + 5)
+    elif 'servo2_down' in request.form:
+        control_servo(servo2, servo2.angle - 5)
+    return ('', 204)
+
+# Function to stop the servos
+@app.route('/stop', methods=['POST'])
+def stop():
+    control_servo(servo1, 90)
+    control_servo(servo2, 90)
+    return ('', 204)
+
+# Stream video feed to web
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+def generate_frames():
+    while True:
+        frame = picam2.capture_array()
+
+        # Encode the frame in JPEG format
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+
+        # Yield the output frame in byte format
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+# Function to control servos via terminal (curses interface)
+def main_curses(stdscr):
+    # Initialize the current positions of the servos
+    curr1 = 90
+    curr2 = 90
+
+    # Clear screen and display instructions
+    stdscr.clear()
+    stdscr.addstr(0, 0, "Control Servo1: d to increase, a to decrease | Control Servo2: w to increase, s to decrease")
+    stdscr.addstr(2, 0, f"Servo1 Position: {curr1}, Servo2 Position: {curr2}")
+    stdscr.refresh()
+
+    while True:
+        # Wait for a single key press
+        key = stdscr.getch()
+
+        # Control Servo1 (Horizontal Movement)
+        if key == ord('d') and curr1 < 180:
+            curr1 = min(180, curr1 + 5)
+            control_servo(servo1, curr1)
+        elif key == ord('a') and curr1 > 0:
+            curr1 = max(0, curr1 - 5)
+            control_servo(servo1, curr1)
+
+        # Control Servo2 (Vertical Movement)
+        elif key == ord('w') and curr2 < 180:
+            curr2 = min(180, curr2 + 5)
+            control_servo(servo2, curr2)
+        elif key == ord('s') and curr2 > 0:
+            curr2 = max(0, curr2 - 5)
+            control_servo(servo2, curr2)
+
+        # Exit the program
+        elif key == ord('q'):
+            stdscr.addstr(4, 0, "Exiting the program.")
+            stdscr.refresh()
+            break
+
+        # Update the display with new positions
+        stdscr.clear()
+        stdscr.addstr(0, 0, "Control Servo1: d to increase, a to decrease | Control Servo2: w to increase, s to decrease")
+        stdscr.addstr(2, 0, f"Servo1 Position: {curr1}, Servo2 Position: {curr2}")
+        stdscr.refresh()
+
+
+# Function to run curses in a separate thread
+def run_curses():
+    curses.wrapper(main_curses)
+
+# Function to run Flask app
+def run_flask():
+    app.run(host='192.168.50.110', port=5000, threaded=True)
+
+# Main entry point to run both Flask and curses
+if __name__ == '__main__':
+    # Create a thread for curses
+    curses_thread = threading.Thread(target=run_curses)
+    curses_thread.start()
+
+    # Run Flask in the main thread
+    run_flask()
