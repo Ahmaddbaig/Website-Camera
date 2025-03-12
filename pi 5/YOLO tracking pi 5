@@ -1,0 +1,203 @@
+import cv2
+from adafruit_servokit import ServoKit
+from picamera2 import Picamera2
+import time
+from flask import Flask, render_template, Response
+from ultralytics import YOLO
+import numpy as np
+
+# Initialize Flask app
+app = Flask(__name__)
+
+# Initialize the PCA9685 module 
+kit = ServoKit(channels=16)
+
+# Set initial chaneels
+pan_servo_channel = 0
+tilt_servo_channel = 1
+
+# Initialize the servos to start
+pan_angle = 90
+tilt_angle = 90
+kit.servo[pan_servo_channel].angle = pan_angle
+kit.servo[tilt_servo_channel].angle = tilt_angle
+
+# Servo movement 
+default_pan_step = 2  
+default_tilt_step = 1  
+
+# Tilt angle limits
+tilt_min_angle = 60
+tilt_max_angle = 120
+
+# Pan angle limits
+pan_left_limit = 30
+pan_right_limit = 150
+
+# Servo smoothing factor
+smoothing_factor = 0.5
+
+# left right movement times
+last_detection_time = time.time()
+timeout_duration = 3  # 3 seconds to wait before scanning
+scanning = False
+scan_direction = 1  # Initial scanning direction (1 for right, -1 for left)
+
+# Threshold to switch to face tracking when really close deosnt work uyet
+really_close_face_threshold = 80000  
+
+# Dead zone for vertical movement to prevent unnecessary tilt
+tilt_dead_zone = 20  # Default vertical dead zone in pixels
+
+# Initialize Picamera
+picam2 = Picamera2()
+picam2.preview_configuration.main.size = (640, 480)  # Standard resolution
+picam2.preview_configuration.main.format = "RGB888"
+picam2.preview_configuration.align()
+picam2.configure("preview")
+picam2.start()
+
+# Load YOLO model for object detection
+model = YOLO('yolov8n_ncnn_model')
+
+def smooth_servo_movement(current_angle, target_angle, step):
+    diff = target_angle - current_angle
+    move_step = smoothing_factor * diff
+    if abs(move_step) > step:
+        move_step = step if move_step > 0 else -step
+    return current_angle + move_step
+
+def move_servo_to_target(x, y, w, h):
+    global pan_angle, tilt_angle, scanning, default_pan_step, default_tilt_step  # Use global variables
+
+    # Set pan_step and tilt_step as defaults at the start
+    pan_step = default_pan_step
+    tilt_step = default_tilt_step
+
+    # Calculate the center of the detected object (face or body)
+    target_center_x = x + w // 2
+    target_center_y = y + h // 2
+
+    # Calculate the center of the frame (camera feed)
+    frame_center_x = 640 // 2
+    frame_center_y = 480 // 2
+
+    # Calculate the size of the bounding box (face size or body size)
+    object_size = w * h
+
+    # If the object is very large (assumed to be a face really close), start tilting up
+    if object_size > really_close_face_threshold:
+        print("Really close, tilting up towards face")
+        # Tilt upward smoothly towards the face
+        tilt_angle = smooth_servo_movement(tilt_angle, tilt_angle - tilt_step, tilt_step)
+    else:
+        print("Tracking body or entire object")
+
+    # Calculate the difference between the target center and the frame center
+    offset_x = target_center_x - frame_center_x
+    offset_y = target_center_y - frame_center_y
+
+    # Reset scanning mode since we found a target
+    scanning = False
+
+    # Pan movement (left or right)
+    if abs(offset_x) > 10:  # Only move if the offset is greater than a threshold
+        if offset_x < 0:  # Target is to the left, pan left
+            pan_angle = smooth_servo_movement(pan_angle, pan_angle + pan_step, pan_step)
+            print(f"Moving pan right: {pan_angle}")
+        else:  # Target is to the right, pan right
+            pan_angle = smooth_servo_movement(pan_angle, pan_angle - pan_step, pan_step)
+            print(f"Moving pan left: {pan_angle}")
+
+    # Tilt movement (up or down) with dead zone
+    if abs(offset_y) > tilt_dead_zone and object_size <= really_close_face_threshold:
+        # Only adjust tilt if the target is not super close
+        if offset_y < 0:  # Target is moving upward in the frame (camera should tilt down)
+            tilt_angle = smooth_servo_movement(tilt_angle, tilt_angle + tilt_step, tilt_step)
+            print(f"Moving tilt down: {tilt_angle}")
+        else:  # Target is moving downward in the frame (camera should tilt up)
+            tilt_angle = smooth_servo_movement(tilt_angle, tilt_angle - tilt_step, tilt_step)
+            print(f"Moving tilt up: {tilt_angle}")
+
+    # Ensure pan and tilt angles stay within their respective limits
+    pan_angle = max(pan_left_limit, min(pan_right_limit, pan_angle))
+    tilt_angle = max(tilt_min_angle, min(tilt_max_angle, tilt_angle))
+
+    # Apply the updated angles to the servos
+    kit.servo[pan_servo_channel].angle = pan_angle
+    kit.servo[tilt_servo_channel].angle = tilt_angle
+
+    print(f"Pan angle: {pan_angle}, Tilt angle: {tilt_angle}")
+    time.sleep(0.01)
+
+def scan_left_right_with_slow_tilt_down():
+    global pan_angle, tilt_angle, pan_step, scan_direction  # Use global pan_angle and tilt_angle
+    # Move the camera to scan left and right continuously
+    pan_angle += pan_step * scan_direction
+    if pan_angle >= pan_right_limit or pan_angle <= pan_left_limit:
+        scan_direction *= -1  # Reverse direction when hitting the limits
+
+    # Slowly tilt down when scanning
+    tilt_angle -= tilt_step  # Gradually decrease tilt to make it look like it's scanning downward
+    if tilt_angle < tilt_min_angle:
+        tilt_angle = tilt_min_angle  # Ensure tilt doesn't go below the minimum angle
+
+    # Apply the updated pan and tilt angles
+    kit.servo[pan_servo_channel].angle = pan_angle
+    kit.servo[tilt_servo_channel].angle = tilt_angle
+
+    print(f"Scanning... Pan angle: {pan_angle}, Tilt angle: {tilt_angle}")
+    time.sleep(0.05)
+
+def gen_frames():
+    global last_detection_time, scanning
+    while True:
+        frame = picam2.capture_array()
+
+        # Convert frame to RGB if it's RGBA
+        if frame.shape[2] == 4:
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2RGB)
+
+        # Run YOLO model for object detection
+        results = model(frame)
+
+        # Process the results
+        if results and len(results[0].boxes) > 0:
+            for result in results[0].boxes:
+                box = result.xyxy[0].cpu().numpy()  # Get bounding box
+                x1, y1, x2, y2 = box[:4]
+
+                conf = result.conf.cpu().numpy()  # Confidence score
+                label = int(result.cls.cpu().numpy())  # Class label as integer
+
+                # If it's a person and confidence is high enough
+                if conf > 0.5 and label == 0:  # 0 is 'person' in COCO dataset
+                    x, y, w, h = int(x1), int(y1), int(x2 - x1), int(y2 - y1)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)  # Draw bounding box
+                    move_servo_to_target(x, y, w, h)
+                    last_detection_time = time.time()
+
+        # If no target is detected, enter scanning mode
+        if time.time() - last_detection_time > timeout_duration:
+            print("No target detected, scanning...")
+            scanning = True
+
+        # If in scanning mode, scan left and right with slow tilt down
+        if scanning:
+            scan_left_right_with_slow_tilt_down()
+
+        # Encode the frame for streaming
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(host='192.168.50.9', port=5000)
