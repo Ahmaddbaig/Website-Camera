@@ -1,1 +1,115 @@
+from flask import Flask, Response, request
+from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero import Servo
+from picamera2 import Picamera2
+import time
+import threading
+import curses
+import cv2
+import numpy as np
 
+app = Flask(__name__)
+
+# Servo setup with PiGPIO
+factory = PiGPIOFactory()
+servo1 = Servo(13, pin_factory=factory)  # GPIO 13 for Servo 1
+servo2 = Servo(12, pin_factory=factory)  # GPIO 12 for Servo 2
+
+# Servo angle mapping (0° = -1, 90° = 0, 180° = 1)
+def value_to_angle(value):
+    return int((value + 1) * 90)  # Map -1 to 1 -> 0 to 180 degrees
+
+def angle_to_value(angle):
+    return (angle / 90.0) - 1  # Map 0 to 180 degrees -> -1 to 1
+
+def set_servo_angle(servo, angle):
+    if angle < 0:
+        angle = 0
+    elif angle > 180:
+        angle = 180
+    servo.value = angle_to_value(angle)
+    return angle
+
+# Initialize servo positions
+servo1_angle = 90  # Start at 90° (midpoint)
+servo2_angle = 90
+set_servo_angle(servo1, servo1_angle)
+set_servo_angle(servo2, servo2_angle)
+
+# PiCamera2 setup
+picam2 = Picamera2()
+camera_config = picam2.create_video_configuration(main={"size": (640, 480)})
+picam2.configure(camera_config)
+picam2.start()
+time.sleep(2)  # Camera warm-up time
+
+# Flask routes
+@app.route('/control', methods=['POST'])
+def control():
+    global servo1_angle, servo2_angle
+    if 'servo1_left' in request.form:
+        servo1_angle = set_servo_angle(servo1, servo1_angle - 5)
+    elif 'servo1_right' in request.form:
+        servo1_angle = set_servo_angle(servo1, servo1_angle + 5)
+    elif 'servo2_up' in request.form:
+        servo2_angle = set_servo_angle(servo2, servo2_angle + 5)
+    elif 'servo2_down' in request.form:
+        servo2_angle = set_servo_angle(servo2, servo2_angle - 5)
+    return ('', 204)
+@app.route('/stop', methods=['POST'])
+def stop():
+    global servo1_angle, servo2_angle
+    servo1_angle = set_servo_angle(servo1, 90)
+    servo2_angle = set_servo_angle(servo2, 90)
+    return ('', 204)
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# Generate camera frames for streaming
+def generate_frames():
+    while True:
+        frame = picam2.capture_array()
+        _, buffer = cv2.imencode('.jpg', frame)
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+
+# Curses-based terminal control
+def main_curses(stdscr):
+    global servo1_angle, servo2_angle
+    stdscr.clear()
+    stdscr.addstr(0, 0, "Control Servo1: d to increase, a to decrease | Control Servo2: w to increase, s to decrease")
+    stdscr.addstr(2, 0, f"Servo1 Position: {servo1_angle}°, Servo2 Position: {servo2_angle}°")
+    stdscr.refresh()
+
+    while True:
+        key = stdscr.getch()
+        if key == ord('d'):  # Servo 1 right
+            servo1_angle = set_servo_angle(servo1, servo1_angle + 5)
+        elif key == ord('a'):  # Servo 1 left
+            servo1_angle = set_servo_angle(servo1, servo1_angle - 5)
+        elif key == ord('w'):  # Servo 2 up
+            servo2_angle = set_servo_angle(servo2, servo2_angle + 5)
+        elif key == ord('s'):  # Servo 2 down
+            servo2_angle = set_servo_angle(servo2, servo2_angle - 5)
+        elif key == ord('q'):  # Exit
+            break
+
+        # Update terminal display
+        stdscr.clear()
+        stdscr.addstr(0, 0, "Control Servo1: d to increase, a to decrease | Control Servo2: w to increase, s to decrease")        
+        stdscr.addstr(2, 0, f"Servo1 Position: {servo1_angle}°, Servo2 Position: {servo2_angle}°")
+        stdscr.refresh()
+
+def run_curses():
+    curses.wrapper(main_curses)
+
+def run_flask():
+    app.run(host='192.168.50.227', port=5002, threaded=True)
+
+# Main program
+if __name__ == '__main__':
+    curses_thread = threading.Thread(target=run_curses)
+    curses_thread.start()
+    run_flask()
