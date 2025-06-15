@@ -444,8 +444,13 @@
         <div class="tv-frame">
             <div class="tv-inner-frame">
                 <div class="tv-screen">
-                    <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed">
+                    <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" loading="eager">
                     <button class="fullscreen-button" onclick="toggleFullScreen()">Full Screen</button>
+                    
+                    <!-- Loading indicator -->
+                    <div id="loadingIndicator" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+                        <i class="fas fa-spinner fa-spin"></i> Connecting to camera...
+                    </div>
                     
                     <!-- Tracking Info Overlay -->
                     <div class="tracking-info" id="trackingInfo">
@@ -574,10 +579,29 @@
             }
         }
 
-        // Refresh live feed
+        // Refresh live feed with better error handling
         function refreshLiveFeed() {
             const img = document.getElementById("liveFeed");
-            img.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
+            const loadingIndicator = document.getElementById("loadingIndicator");
+            
+            // Show loading indicator
+            loadingIndicator.style.display = "block";
+            
+            // Create new image element to test connection
+            const testImg = new Image();
+            testImg.onload = function() {
+                // Connection successful, update main feed
+                img.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
+                loadingIndicator.style.display = "none";
+            };
+            testImg.onerror = function() {
+                // Connection failed, retry in 2 seconds
+                console.error("Failed to connect to camera feed, retrying...");
+                setTimeout(refreshLiveFeed, 2000);
+            };
+            
+            // Test connection
+            testImg.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
         }
 
         // Toggle camera
@@ -783,12 +807,39 @@
         // Initialize
         updateModeButtons();
         
+        // Auto-refresh video feed on error
+        document.getElementById("liveFeed").onerror = function() {
+            console.log("Video feed error, attempting to reconnect...");
+            setTimeout(() => {
+                refreshLiveFeed();
+            }, 1000);
+        };
+        
+        // Periodic refresh to ensure connection
+        setInterval(() => {
+            const img = document.getElementById("liveFeed");
+            // Check if image is not loading properly
+            if (img.complete && img.naturalHeight === 0) {
+                console.log("Video feed seems disconnected, refreshing...");
+                refreshLiveFeed();
+            }
+        }, 5000);
+        
         // Update advanced status every 2 seconds when modal is open
         setInterval(() => {
             if (document.getElementById("advancedControlsModal").style.display === "block") {
                 updateAdvancedStatus();
             }
         }, 2000);
+        
+        // Auto-start video feed on page load
+        window.onload = function() {
+            refreshLiveFeed();
+            // Set initial camera to camera 1
+            if (currentCameraURL !== camera1URL) {
+                toggleCamera();
+            }
+        };
     </script>
 </body>
 </html>
