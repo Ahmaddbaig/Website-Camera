@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Existing styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+
         .camera-toggle button {
             background-color: #4CAF50;
             color: white;
@@ -313,6 +321,211 @@
             font-size: 18px;
             z-index: 10;
         }
+
+        /* Mode buttons styling */
+        .mode-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .mode-buttons button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-buttons button:hover {
+            background-color: #555;
+        }
+
+        .mode-buttons button.active {
+            background-color: #4CAF50;
+        }
+
+        /* Control buttons styling */
+        .control-buttons {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .arrow-keys {
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .arrow-key {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            font-size: 20px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .arrow-key:hover {
+            background-color: #666;
+        }
+
+        .laser-button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .laser-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .center-screen {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .tv-frame {
+            display: inline-block;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .tv-inner-frame {
+            position: relative;
+            background-color: #000;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .tv-screen {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-feed {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .fullscreen-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 16px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .fullscreen-button:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .logo {
+            text-align: center;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .sentry {
+            font-size: 48px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .security {
+            font-size: 24px;
+            color: #888;
+        }
+
+        .hamburger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .side-menu {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #2a2a2a;
+            transition: left 0.3s;
+            z-index: 1000;
+            padding-top: 60px;
+        }
+
+        .side-menu.open {
+            left: 0;
+        }
+
+        .side-menu button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: none;
+            color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .side-menu button:hover {
+            background-color: #333;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            background-color: #2a2a2a;
+            color: #888;
+        }
+
+        footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        #manual-status {
+            color: #ff9800;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .manual-controls {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .manual-controls.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -400,6 +613,14 @@
                         <span>Active ROIs:</span>
                         <span class="metric-value" id="roi-count">0</span>
                     </div>
+                    <div class="metric">
+                        <span>Pan Position:</span>
+                        <span class="metric-value" id="pan-pos">90°</span>
+                    </div>
+                    <div class="metric">
+                        <span>Tilt Position:</span>
+                        <span class="metric-value" id="tilt-pos">90°</span>
+                    </div>
                 </div>
 
                 <!-- Performance Mode Panel -->
@@ -436,16 +657,16 @@
                     <h3>PID Controller</h3>
                     <h4 style="color: #888; font-size: 14px;">Pan Axis</h4>
                     <div class="slider-container">
-                        <label>Kp: <span id="pan-kp-value">0.015</span></label>
-                        <input type="range" class="slider" id="pan-kp" min="0" max="0.1" step="0.001" value="0.015" oninput="updatePID()">
+                        <label>Kp: <span id="pan-kp-value">0.008</span></label>
+                        <input type="range" class="slider" id="pan-kp" min="0" max="0.05" step="0.001" value="0.008" oninput="updatePID()">
                     </div>
                     <div class="slider-container">
-                        <label>Ki: <span id="pan-ki-value">0.001</span></label>
-                        <input type="range" class="slider" id="pan-ki" min="0" max="0.01" step="0.0001" value="0.001" oninput="updatePID()">
+                        <label>Ki: <span id="pan-ki-value">0.0005</span></label>
+                        <input type="range" class="slider" id="pan-ki" min="0" max="0.01" step="0.0001" value="0.0005" oninput="updatePID()">
                     </div>
                     <div class="slider-container">
-                        <label>Kd: <span id="pan-kd-value">0.008</span></label>
-                        <input type="range" class="slider" id="pan-kd" min="0" max="0.05" step="0.001" value="0.008" oninput="updatePID()">
+                        <label>Kd: <span id="pan-kd-value">0.004</span></label>
+                        <input type="range" class="slider" id="pan-kd" min="0" max="0.05" step="0.001" value="0.004" oninput="updatePID()">
                     </div>
                     <button onclick="resetPID()" style="width: 100%; margin-top: 10px;">Reset to Defaults</button>
                 </div>
@@ -488,6 +709,26 @@
             <!-- Buttons will be dynamically generated here -->
         </div>
 
+        <!-- Manual Controls (hidden by default) -->
+        <div class="manual-controls" id="manual-controls">
+            <h3>Manual Control Mode Active</h3>
+            <div class="arrow-keys">
+                <div>
+                    <button class="arrow-key" onclick="sendKey('w')">↑</button>
+                </div>
+                <div>
+                    <button class="arrow-key" onclick="sendKey('a')">←</button>
+                    <button class="arrow-key" onclick="sendKey('c')">●</button>
+                    <button class="arrow-key" onclick="sendKey('d')">→</button>
+                </div>
+                <div>
+                    <button class="arrow-key" onclick="sendKey('s')">↓</button>
+                </div>
+            </div>
+            <button style="background-color: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" onclick="sendKey('x')">Exit Manual Mode</button>
+            <div id="manual-status"></div>
+        </div>
+
         <!-- Camera Toggle Button -->
         <div class="camera-toggle">
             <button onclick="toggleCamera()">Switch Camera</button>
@@ -521,75 +762,125 @@
 
     <!-- JavaScript -->
     <script>
+        // Update these URLs to match your zrok endpoints
+        const camera1URL = "https://camerastream1.share.zrok.io";  // Your actual zrok URL
+        const camera2URL = "https://camerastream.share.zrok.io";   // Your actual zrok URL
+        let currentCameraURL = camera1URL;
+
         // Existing variables
         const activeKeys = {};
         let keyPressInterval;
-        let camera1URL = "https://camerastream1.share.zrok.io";  // Your zrok URL
-        let camera2URL = "https://camerastream.share.zrok.io";
-        let activationMode1URL = "https://activationmode1.share.zrok.io";  // Your zrok URL
-        let activationMode2URL = "https://activationmode.share.zrok.io";
-        let currentCameraURL = camera1URL;
-        let currentActivationModeURL = activationMode1URL;
+        let statusUpdateInterval;
 
-        const cameraModes = {
-            camera1: ["AI Track", "Face Priority", "Manual", "ROI Mode", "PID Test"],
-            camera2: ["MANUAL", "CLIENT"]
-        };
-
-        // Initialize camera feed on page load
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("Page loaded, initializing camera feed...");
+            console.log("Initializing Advanced Tracking System...");
             
-            // Hide loading overlay initially
-            const loadingOverlay = document.getElementById('loadingOverlay');
+            // Set initial camera feed
             const liveFeed = document.getElementById('liveFeed');
+            const loadingOverlay = document.getElementById('loadingOverlay');
             
-            // Set initial camera URL
-            liveFeed.src = currentCameraURL + '/video_feed';
-            
-            // When image loads successfully
-            liveFeed.onload = function() {
-                console.log("Camera feed loaded successfully");
-                loadingOverlay.style.display = 'none';
-            };
-            
-            // When image fails to load
-            liveFeed.onerror = function() {
-                console.log("Camera feed error, retrying...");
-                setTimeout(() => {
-                    liveFeed.src = currentCameraURL + '/video_feed?t=' + new Date().getTime();
-                }, 2000);
-            };
+            if (liveFeed) {
+                liveFeed.src = currentCameraURL + '/video_feed';
+                
+                liveFeed.onload = function() {
+                    console.log("Camera feed loaded");
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
+                };
+                
+                liveFeed.onerror = function() {
+                    console.log("Camera feed error, retrying...");
+                    setTimeout(() => {
+                        liveFeed.src = currentCameraURL + '/video_feed?t=' + new Date().getTime();
+                    }, 2000);
+                };
+            }
             
             // Initialize mode buttons
             updateModeButtons();
+            
+            // Start status updates
+            statusUpdateInterval = setInterval(updateAdvancedStatus, 2000);
+            updateAdvancedStatus();
         });
 
-        // Sidebar toggle logic
-        function toggleMenu() {
-            document.getElementById("sideMenu").classList.toggle("open");
+        // Activate tracking mode
+        function activateMode(mode) {
+            console.log(`Activating mode ${mode}`);
+            
+            fetch(`${currentCameraURL}/activate_mode/${mode}`, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                console.log(`Mode ${mode} activated:`, data);
+                
+                // Update button states
+                const buttons = document.querySelectorAll('#modeButtons button');
+                buttons.forEach((btn, index) => {
+                    btn.classList.toggle('active', index === mode - 1);
+                });
+                
+                // Show/hide manual controls for mode 3
+                const manualControls = document.getElementById('manual-controls');
+                if (manualControls) {
+                    manualControls.classList.toggle('active', mode === 3);
+                }
+            })
+            .catch(error => {
+                console.error('Error activating mode:', error);
+            });
         }
 
-        // Handle keyboard events
-        document.addEventListener("keydown", function (event) {
-            const key = event.key.toLowerCase();
-            if (!activeKeys[key]) {
-                activeKeys[key] = true;
-                startContinuousKey(key);
-            }
-        });
+        // Send key input
+        function sendKey(key) {
+            console.log(`Sending key: ${key}`);
+            
+            fetch(`${currentCameraURL}/key_input`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ key: key })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                console.log(`Key ${key} sent:`, data);
+                
+                // Update manual status
+                const manualStatus = document.getElementById('manual-status');
+                if (manualStatus && data.pan !== undefined && data.tilt !== undefined) {
+                    manualStatus.textContent = `Pan: ${data.pan.toFixed(1)}° | Tilt: ${data.tilt.toFixed(1)}°`;
+                }
+                
+                // Hide manual controls if exiting
+                if (key === 'x') {
+                    const manualControls = document.getElementById('manual-controls');
+                    if (manualControls) {
+                        manualControls.classList.remove('active');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Error sending key:", error);
+            });
+        }
 
-        document.addEventListener("keyup", function (event) {
-            const key = event.key.toLowerCase();
-            if (activeKeys[key]) {
-                activeKeys[key] = false;
-                stopContinuousKey();
-            }
-        });
-
-        // Continuous key commands
+        // Continuous key press handling
         function startContinuousKey(key) {
             clearInterval(keyPressInterval);
+            sendKey(key); // Send immediately
             keyPressInterval = setInterval(() => sendKey(key), 100);
         }
 
@@ -597,27 +888,224 @@
             clearInterval(keyPressInterval);
         }
 
-        // Send key to the server
-        function sendKey(key) {
-            fetch(`${currentActivationModeURL}/key_input`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ key })
+        // Set performance mode (Camera 1 only)
+        function setAdvancedMode(mode) {
+            if (currentCameraURL !== camera1URL) return;
+            
+            console.log(`Setting performance mode: ${mode}`);
+            
+            fetch(`${camera1URL}/api/set_mode`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({mode: mode})
             })
             .then(response => response.json())
-            .then(data => console.log(`Key ${key} sent:`, data.status))
-            .catch(error => console.error("Error:", error));
+            .then(data => {
+                console.log('Performance mode set:', data);
+                
+                // Update button states
+                document.querySelectorAll('.mode-button').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent.toLowerCase() === mode) {
+                        btn.classList.add('active');
+                    }
+                });
+            })
+            .catch(error => console.error('Error setting mode:', error));
         }
 
-        // Activate camera mode
-        function activateMode(mode) {
-            fetch(`${currentActivationModeURL}/activate_mode/${mode}`, { method: "POST" })
-            .then(response => response.json())
-            .then(data => console.log(`Mode ${mode} activated:`, data.status))
-            .catch(error => console.error("Error:", error));
+        // Toggle camera
+        function toggleCamera() {
+            currentCameraURL = currentCameraURL === camera1URL ? camera2URL : camera1URL;
+            
+            console.log(`Switched to camera: ${currentCameraURL === camera1URL ? '1' : '2'}`);
+            
+            // Update title
+            const cameraTitle = document.getElementById("cameraTitle");
+            if (cameraTitle) {
+                cameraTitle.textContent = currentCameraURL === camera1URL ? 
+                    "Live Camera Feed 1 - Advanced AI Tracking" : "Live Camera Feed 2";
+            }
+            
+            // Show/hide disclaimer
+            const disclaimer = document.getElementById("disclaimer");
+            if (disclaimer) {
+                disclaimer.classList.toggle("visible", currentCameraURL === camera2URL);
+            }
+            
+            // Hide manual controls
+            const manualControls = document.getElementById('manual-controls');
+            if (manualControls) {
+                manualControls.classList.remove('active');
+            }
+            
+            // Update mode buttons
+            updateModeButtons();
+            
+            // Refresh feed
+            refreshLiveFeed();
         }
 
-        // Fullscreen toggle
+        // Refresh live feed
+        function refreshLiveFeed() {
+            const img = document.getElementById("liveFeed");
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            if (loadingOverlay) loadingOverlay.style.display = 'flex';
+            if (img) {
+                img.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
+            }
+        }
+
+        // Update mode buttons based on current camera
+        function updateModeButtons() {
+            const modeButtons = document.getElementById("modeButtons");
+            if (!modeButtons) return;
+            
+            modeButtons.innerHTML = "";
+            
+            const cameraModes = {
+                camera1: ["AI Track", "Face Priority", "Manual", "ROI Mode", "PID Test"],
+                camera2: ["MANUAL", "CLIENT"]
+            };
+            
+            const modes = currentCameraURL === camera1URL ? cameraModes.camera1 : cameraModes.camera2;
+            
+            modes.forEach((mode, index) => {
+                const button = document.createElement("button");
+                button.textContent = mode;
+                button.onclick = () => activateMode(index + 1);
+                if (index === 0) button.classList.add('active'); // Default first mode active
+                modeButtons.appendChild(button);
+            });
+        }
+
+        // Update advanced status (Camera 1 only)
+        function updateAdvancedStatus() {
+            if (currentCameraURL !== camera1URL) return;
+            
+            fetch(`${camera1URL}/api/status`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    // Update status displays
+                    updateStatusDisplay('tracking-status', getTrackingStatusText(data.tracking_state));
+                    updateStatusDisplay('fps', data.performance_metrics.fps.toFixed(1));
+                    updateStatusDisplay('detection-fps', data.performance_metrics.detection_fps.toFixed(1));
+                    updateStatusDisplay('cpu-temp', data.performance_metrics.cpu_temp.toFixed(1) + '°C');
+                    updateStatusDisplay('confidence', (data.tracking_state.confidence * 100).toFixed(0) + '%');
+                    
+                    // Update servo positions
+                    if (data.servo_positions) {
+                        updateStatusDisplay('pan-pos', data.servo_positions.pan.toFixed(1) + '°');
+                        updateStatusDisplay('tilt-pos', data.servo_positions.tilt.toFixed(1) + '°');
+                    }
+                    
+                    // Update status indicator
+                    const indicator = document.getElementById('status-indicator');
+                    if (indicator) {
+                        indicator.className = 'status-indicator';
+                        if (data.tracking_state.locked) {
+                            indicator.classList.add('status-locked');
+                        } else if (data.tracking_state.scanning) {
+                            indicator.classList.add('status-scanning');
+                        } else {
+                            indicator.classList.add('status-tracking');
+                        }
+                    }
+                    
+                    // Update ROI metrics
+                    if (data.roi_metrics) {
+                        updateStatusDisplay('roi-count', data.roi_metrics.num_rois);
+                        updateStatusDisplay('roi-reduction', 
+                            (data.roi_metrics.processing_reduction * 100).toFixed(1) + '%');
+                    }
+                    
+                    // Update known faces
+                    updateStatusDisplay('known-faces', data.known_faces);
+                    
+                    // Update tracking info overlay
+                    const trackingDetails = document.getElementById('tracking-details');
+                    if (trackingDetails && data.tracking_state.current_target_id !== null) {
+                        trackingDetails.innerHTML = `
+                            Target ID: ${data.tracking_state.current_target_id}<br>
+                            Mode: ${data.tracking_state.performance_mode}<br>
+                            Tracking: ${data.tracking_state.tracking_mode}<br>
+                            ROIs: ${data.roi_metrics ? data.roi_metrics.num_rois : 0}
+                        `;
+                    } else if (trackingDetails) {
+                        trackingDetails.innerHTML = 'No active target';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating status:', error);
+                });
+        }
+
+        // Helper function to update status displays
+        function updateStatusDisplay(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+
+        // Get tracking status text
+        function getTrackingStatusText(trackingState) {
+            if (trackingState.manual_control) return 'MANUAL';
+            if (trackingState.locked) return 'LOCKED';
+            if (trackingState.scanning) return 'SCANNING';
+            return 'TRACKING';
+        }
+
+        // Toggle advanced controls
+        function toggleAdvancedControls() {
+            const modal = document.getElementById("advancedControlsModal");
+            if (modal) {
+                if (modal.style.display === "block") {
+                    closeAdvancedControls();
+                } else {
+                    modal.style.display = "block";
+                    document.body.classList.add("advanced-controls-open");
+                    updateAdvancedStatus();
+                }
+            }
+        }
+
+        function closeAdvancedControls() {
+            const modal = document.getElementById("advancedControlsModal");
+            if (modal) {
+                modal.style.display = "none";
+                document.body.classList.remove("advanced-controls-open");
+            }
+        }
+
+        // View all feeds
+        function viewAllFeeds() {
+            const modal = document.getElementById("allFeedsModal");
+            if (modal) {
+                modal.style.display = "block";
+            }
+        }
+
+        function closeAllFeeds() {
+            const modal = document.getElementById("allFeedsModal");
+            if (modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Toggle menu
+        function toggleMenu() {
+            const sideMenu = document.getElementById("sideMenu");
+            if (sideMenu) {
+                sideMenu.classList.toggle("open");
+            }
+        }
+
+        // Toggle fullscreen
         function toggleFullScreen() {
             const feed = document.querySelector(".tv-screen");
             if (!document.fullscreenElement) {
@@ -627,158 +1115,24 @@
             }
         }
 
-        // Refresh live feed
-        function refreshLiveFeed() {
-            const img = document.getElementById("liveFeed");
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            
-            loadingOverlay.style.display = 'flex';
-            img.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
-        }
-
-        // Toggle camera
-        function toggleCamera() {
-            currentCameraURL = currentCameraURL === camera1URL ? camera2URL : camera1URL;
-            currentActivationModeURL = currentCameraURL === camera1URL ? activationMode1URL : activationMode2URL;
-
-            document.getElementById("cameraTitle").textContent = currentCameraURL === camera1URL ? "Live Camera Feed 1 - Advanced AI Tracking" : "Live Camera Feed 2";
-
-            const disclaimer = document.getElementById("disclaimer");
-            if (currentCameraURL === camera2URL) {
-                disclaimer.classList.add("visible");
-            } else {
-                disclaimer.classList.remove("visible");
-            }
-
-            closeAllFeeds();
-            updateModeButtons();
-            refreshLiveFeed();
-        }
-
-        // Update mode buttons dynamically
-        function updateModeButtons() {
-            const modeButtons = document.getElementById("modeButtons");
-            modeButtons.innerHTML = "";
-
-            const modes = currentCameraURL === camera1URL ? cameraModes.camera1 : cameraModes.camera2;
-            modes.forEach((mode, index) => {
-                const button = document.createElement("button");
-                button.textContent = mode;
-                button.onclick = () => activateMode(index + 1);
-                modeButtons.appendChild(button);
-            });
-        }
-
-        // View all feeds
-        function viewAllFeeds() {
-            document.getElementById("allFeedsModal").style.display = "block";
-        }
-
-        function closeAllFeeds() {
-            document.getElementById("allFeedsModal").style.display = "none";
-        }
-
-        // Advanced Controls
-        function toggleAdvancedControls() {
-            const modal = document.getElementById("advancedControlsModal");
-            if (modal.style.display === "block") {
-                closeAdvancedControls();
-            } else {
-                modal.style.display = "block";
-                document.body.classList.add("advanced-controls-open");
-                updateAdvancedStatus();
-            }
-        }
-
-        function closeAdvancedControls() {
-            document.getElementById("advancedControlsModal").style.display = "none";
-            document.body.classList.remove("advanced-controls-open");
-        }
-
-        // Update advanced status
-        function updateAdvancedStatus() {
-            if (currentCameraURL !== camera1URL) return;
-
-            fetch(`${camera1URL}/api/status`)
-                .then(response => response.json())
-                .then(data => {
-                    // Update status indicator
-                    const indicator = document.getElementById('status-indicator');
-                    indicator.className = 'status-indicator';
-                    
-                    let statusText = 'IDLE';
-                    if (data.tracking_state.locked) {
-                        indicator.classList.add('status-locked');
-                        statusText = 'LOCKED';
-                    } else if (data.tracking_state.scanning) {
-                        indicator.classList.add('status-scanning');
-                        statusText = 'SCANNING';
-                    } else {
-                        indicator.classList.add('status-tracking');
-                        statusText = 'TRACKING';
-                    }
-                    
-                    document.getElementById('tracking-status').textContent = statusText;
-                    
-                    // Update metrics
-                    document.getElementById('fps').textContent = data.performance_metrics.fps.toFixed(1);
-                    document.getElementById('detection-fps').textContent = data.performance_metrics.detection_fps.toFixed(1);
-                    document.getElementById('cpu-temp').textContent = data.performance_metrics.cpu_temp.toFixed(1) + '°C';
-                    document.getElementById('confidence').textContent = (data.tracking_state.confidence * 100).toFixed(0) + '%';
-                    
-                    // Update ROI metrics
-                    if (data.roi_metrics) {
-                        document.getElementById('roi-count').textContent = data.roi_metrics.num_rois;
-                        document.getElementById('roi-reduction').textContent = 
-                            (data.roi_metrics.processing_reduction * 100).toFixed(1) + '%';
-                    }
-                    
-                    // Update known faces
-                    document.getElementById('known-faces').textContent = data.known_faces;
-                    
-                    // Update tracking info overlay
-                    const trackingDetails = document.getElementById('tracking-details');
-                    if (data.tracking_state.current_target_id !== null) {
-                        trackingDetails.innerHTML = `
-                            Target ID: ${data.tracking_state.current_target_id}<br>
-                            Mode: ${data.tracking_state.performance_mode}<br>
-                            ROIs: ${data.roi_metrics ? data.roi_metrics.num_rois : 0}
-                        `;
-                    } else {
-                        trackingDetails.innerHTML = 'No active target';
-                    }
-                })
-                .catch(error => console.error('Error updating status:', error));
-        }
-
-        // Set advanced mode
-        function setAdvancedMode(mode) {
-            fetch(`${camera1URL}/api/set_mode`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({mode: mode})
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.querySelectorAll('.mode-button').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                event.target.classList.add('active');
-            })
-            .catch(error => console.error('Error setting mode:', error));
-        }
-
         // Update PID
         function updatePID() {
-            document.getElementById('pan-kp-value').textContent = document.getElementById('pan-kp').value;
-            document.getElementById('pan-ki-value').textContent = document.getElementById('pan-ki').value;
-            document.getElementById('pan-kd-value').textContent = document.getElementById('pan-kd').value;
+            const panKp = document.getElementById('pan-kp');
+            const panKi = document.getElementById('pan-ki');
+            const panKd = document.getElementById('pan-kd');
+            
+            if (!panKp || !panKi || !panKd) return;
+            
+            // Update display values
+            document.getElementById('pan-kp-value').textContent = panKp.value;
+            document.getElementById('pan-ki-value').textContent = panKi.value;
+            document.getElementById('pan-kd-value').textContent = panKd.value;
             
             const pidData = {
                 pan: {
-                    kp: parseFloat(document.getElementById('pan-kp').value),
-                    ki: parseFloat(document.getElementById('pan-ki').value),
-                    kd: parseFloat(document.getElementById('pan-kd').value)
+                    kp: parseFloat(panKp.value),
+                    ki: parseFloat(panKi.value),
+                    kd: parseFloat(panKd.value)
                 }
             };
             
@@ -788,21 +1142,32 @@
                 body: JSON.stringify(pidData)
             })
             .then(response => response.json())
+            .then(data => console.log('PID updated:', data))
             .catch(error => console.error('Error updating PID:', error));
         }
 
         // Reset PID
         function resetPID() {
-            document.getElementById('pan-kp').value = 0.015;
-            document.getElementById('pan-ki').value = 0.001;
-            document.getElementById('pan-kd').value = 0.008;
+            const panKp = document.getElementById('pan-kp');
+            const panKi = document.getElementById('pan-ki');
+            const panKd = document.getElementById('pan-kd');
+            
+            if (panKp) panKp.value = 0.008;
+            if (panKi) panKi.value = 0.0005;
+            if (panKd) panKd.value = 0.004;
+            
             updatePID();
         }
 
         // Add face
         function addFace() {
-            const name = document.getElementById('face-name').value;
-            const priority = document.getElementById('face-priority').value;
+            const nameInput = document.getElementById('face-name');
+            const priorityInput = document.getElementById('face-priority');
+            
+            if (!nameInput || !priorityInput) return;
+            
+            const name = nameInput.value;
+            const priority = priorityInput.value;
             
             if (!name) {
                 alert('Please enter a name');
@@ -817,31 +1182,61 @@
             .then(response => response.json())
             .then(data => {
                 alert(data.message);
-                document.getElementById('face-name').value = '';
-                document.getElementById('face-priority').value = '5';
+                nameInput.value = '';
+                priorityInput.value = '5';
             })
             .catch(error => console.error('Error adding face:', error));
         }
 
-        // Window click handler
+        // Keyboard event handlers
+        document.addEventListener("keydown", function(event) {
+            const key = event.key.toLowerCase();
+            
+            // Only handle in manual mode or if manual controls are visible
+            const manualControls = document.getElementById('manual-controls');
+            if (manualControls && manualControls.classList.contains('active')) {
+                event.preventDefault();
+                
+                if (!activeKeys[key]) {
+                    activeKeys[key] = true;
+                    startContinuousKey(key);
+                }
+            }
+        });
+
+        document.addEventListener("keyup", function(event) {
+            const key = event.key.toLowerCase();
+            
+            if (activeKeys[key]) {
+                activeKeys[key] = false;
+                stopContinuousKey();
+            }
+        });
+
+        // Window click handler for modals
         window.onclick = function(event) {
             const feedsModal = document.getElementById("allFeedsModal");
             const advancedModal = document.getElementById("advancedControlsModal");
             
             if (event.target === feedsModal) {
-                feedsModal.style.display = "none";
+                closeAllFeeds();
             }
             if (event.target === advancedModal) {
                 closeAdvancedControls();
             }
         };
 
-        // Update advanced status every 2 seconds when modal is open
-        setInterval(() => {
-            if (document.getElementById("advancedControlsModal").style.display === "block") {
-                updateAdvancedStatus();
+        // Cleanup on page unload
+        window.onbeforeunload = function() {
+            if (statusUpdateInterval) {
+                clearInterval(statusUpdateInterval);
             }
-        }, 2000);
+            if (keyPressInterval) {
+                clearInterval(keyPressInterval);
+            }
+        };
+
+        console.log("Advanced Tracking System JavaScript loaded successfully");
     </script>
 </body>
 </html>
