@@ -3,75 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Feed | Raspberry Pi Project</title>
-    <link rel="stylesheet" href="camera.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Enhanced Security Camera System</title>
     <style>
-        /* Existing styles */
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
             background-color: #1a1a1a;
-            color: #e0e0e0;
+            color: #fff;
+            overflow-x: hidden;
         }
 
-        .camera-toggle button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        .camera-toggle button:hover {
-            background-color: #45a049;
-        }
-
-        .camera-toggle button:focus {
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
-        }
-
-        #disclaimer {
-            display: none;
-            color: #ff9800;
-            font-size: 14px;
-            margin-top: 10px;
+        .header {
             text-align: center;
-            font-style: italic;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
         }
 
-        #disclaimer.visible {
-            display: block;
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .view-all-feeds {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
+        .camera-section {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .view-all-feeds button {
-            background-color: #008CBA;
+        .camera-feed {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls-section {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .recordings-section {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .recordings-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .recording-item {
+            background: #3a3a3a;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .recording-item:hover {
+            background: #4a4a4a;
+            transform: translateX(5px);
+        }
+
+        .recording-info {
+            flex: 1;
+        }
+
+        .recording-reason {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #667eea;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .button {
+            background: #667eea;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s;
+            margin: 5px;
         }
 
-        .view-all-feeds button:hover {
-            background-color: #007bb5;
+        .button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .button.danger {
+            background: #e74c3c;
+        }
+
+        .button.danger:hover {
+            background: #c0392b;
+        }
+
+        .button.success {
+            background: #27ae60;
+        }
+
+        .button.success:hover {
+            background: #229954;
+        }
+
+        .zone-config {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .zone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
         }
 
         .modal {
@@ -82,33 +190,16 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
             background-color: rgba(0, 0, 0, 0.8);
         }
 
         .modal-content {
+            background-color: #2a2a2a;
             margin: 5% auto;
             padding: 20px;
-            background-color: #2a2a2a;
-            color: white;
             border-radius: 10px;
-            width: 90%;
-            max-width: 1200px;
-            text-align: center;
-        }
-
-        .feeds-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .feeds-grid .feed img {
-            width: 100%;
-            height: auto;
-            border: 2px solid #ccc;
-            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
         }
 
         .close {
@@ -119,104 +210,23 @@
             cursor: pointer;
         }
 
-        .close:hover, .close:focus {
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
+        .close:hover {
+            color: #fff;
         }
 
-        /* New Phase 1 Control Styles */
-        .advanced-controls-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ff5722;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1000;
-        }
-
-        .advanced-controls-button:hover {
-            background-color: #f44336;
-        }
-
-        .control-panel {
-            background-color: #1a1a1a;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 10px 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .control-panel h3 {
-            margin-top: 0;
-            color: #4CAF50;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
-        }
-
-        .metric {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            padding: 5px 10px;
-            background-color: #333;
-            border-radius: 5px;
-        }
-
-        .metric-value {
-            font-weight: bold;
-            color: #4CAF50;
-        }
-
-        .slider-container {
-            margin: 15px 0;
-        }
-
-        .slider {
+        #videoPlayer {
             width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #333;
-            outline: none;
-            -webkit-appearance: none;
+            border-radius: 10px;
         }
 
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-        }
-
-        .status-indicator {
+        .recording-indicator {
             display: inline-block;
             width: 12px;
             height: 12px;
+            background: #e74c3c;
             border-radius: 50%;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
-
-        .status-scanning {
-            background-color: #ff9800;
-            animation: pulse 1s infinite;
-        }
-
-        .status-tracking {
-            background-color: #ffeb3b;
-        }
-
-        .status-locked {
-            background-color: #4CAF50;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
@@ -225,1018 +235,266 @@
             100% { opacity: 1; }
         }
 
-        .mode-buttons-advanced {
-            display: flex;
-            justify-content: space-around;
-            margin: 10px 0;
-            gap: 10px;
-        }
-
-        .mode-button {
-            flex: 1;
-            padding: 10px;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .mode-button:hover {
-            background-color: #555;
-        }
-
-        .mode-button.active {
-            background-color: #2196F3;
-        }
-
-        .face-controls {
-            display: flex;
-            gap: 10px;
-            margin: 10px 0;
-        }
-
-        .face-controls input {
-            flex: 1;
-            padding: 8px;
-            background-color: #333;
-            border: 1px solid #555;
-            border-radius: 5px;
-            color: white;
-        }
-
-        .face-controls button {
-            padding: 8px 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .face-controls button:hover {
-            background-color: #45a049;
-        }
-
-        .tracking-info {
+        .gesture-indicator {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            max-width: 300px;
-        }
-
-        .control-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        /* Make existing elements more compact when advanced controls are open */
-        body.advanced-controls-open .center-screen {
-            padding: 10px;
-        }
-
-        body.advanced-controls-open .tv-frame {
-            margin: 10px auto;
-        }
-
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            z-index: 10;
-        }
-
-        /* Mode buttons styling */
-        .mode-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .mode-buttons button {
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .mode-buttons button:hover {
-            background-color: #555;
-        }
-
-        .mode-buttons button.active {
-            background-color: #4CAF50;
-        }
-
-        /* Control buttons styling */
-        .control-buttons {
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .arrow-keys {
-            display: inline-block;
-            margin: 10px;
-        }
-
-        .arrow-key {
-            width: 50px;
-            height: 50px;
-            margin: 5px;
-            font-size: 20px;
-            background-color: #555;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .arrow-key:hover {
-            background-color: #666;
-        }
-
-        .laser-button {
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .laser-button:hover {
-            background-color: #d32f2f;
-        }
-
-        .center-screen {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .tv-frame {
-            display: inline-block;
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .tv-inner-frame {
-            position: relative;
-            background-color: #000;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .tv-screen {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .camera-feed {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .fullscreen-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 8px 16px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .fullscreen-button:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .logo {
-            text-align: center;
-            cursor: pointer;
-            margin: 20px 0;
-        }
-
-        .sentry {
-            font-size: 48px;
-            font-weight: bold;
-            color: #4CAF50;
-        }
-
-        .security {
-            font-size: 24px;
-            color: #888;
-        }
-
-        .hamburger {
-            position: fixed;
             top: 20px;
-            left: 20px;
-            font-size: 30px;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
-        .side-menu {
-            position: fixed;
-            left: -250px;
-            top: 0;
-            width: 250px;
-            height: 100%;
-            background-color: #2a2a2a;
-            transition: left 0.3s;
-            z-index: 1000;
-            padding-top: 60px;
-        }
-
-        .side-menu.open {
-            left: 0;
-        }
-
-        .side-menu button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: none;
-            color: white;
-            border: none;
-            text-align: left;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .side-menu button:hover {
-            background-color: #333;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            background-color: #2a2a2a;
-            color: #888;
-        }
-
-        footer a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        #manual-status {
-            color: #ff9800;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .manual-controls {
-            text-align: center;
-            margin: 20px 0;
+            right: 20px;
+            background: #27ae60;
+            padding: 10px 20px;
+            border-radius: 5px;
             display: none;
+            animation: fadeInOut 2s;
         }
 
-        .manual-controls.active {
-            display: block;
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-20px); }
+            50% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Enhanced Security Camera System</h1>
+            <p>Smart Tracking • Gesture Control • Zone Monitoring</p>
+        </div>
 
-    <!-- Logo Section -->
-    <div class="logo" onclick="location.href='index.html'">
-        <div class="sentry">SENTRY</div>
-        <div class="security">SECURITY</div>
-    </div>
-
-    <!-- Hamburger Menu Button -->
-    <div class="hamburger" onclick="toggleMenu()">☰</div>
-
-    <!-- Sidebar Menu -->
-    <div id="sideMenu" class="side-menu">
-        <button onclick="location.href='other.html'">Home</button>
-        <button onclick="location.href='meet.html'">Meet The Team</button>
-        <button onclick="location.href='buying.html'">Product</button>
-        <button onclick="location.href='features.html'">Project Features</button>
-        <button onclick="location.href='faq.html'">FAQ</button>
-        <button onclick="location.href='contact.html'">Contact</button>
-        <button onclick="location.href='login.html'">Login</button>
-        <button onclick="location.href='other.html'">DEMO Page</button>
-    </div>
-
-    <!-- View All Feeds Button -->
-    <div class="view-all-feeds">
-        <button onclick="viewAllFeeds()">View All Feeds</button>
-    </div>
-
-    <!-- Advanced Controls Button -->
-    <button class="advanced-controls-button" onclick="toggleAdvancedControls()">
-        <i class="fas fa-cog"></i> Advanced Controls
-    </button>
-
-    <!-- Modal for All Feeds -->
-    <div id="allFeedsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAllFeeds()">&times;</span>
-            <h2>All Camera Feeds</h2>
-            <div class="feeds-grid">
-                <div class="feed">
-                    <h3>Camera 1</h3>
-                    <img src="https://camerastream1.share.zrok.io/video_feed" alt="Camera 1 Feed">
-                </div>
-                <div class="feed">
-                    <h3>Camera 2</h3>
-                    <img src="https://camerastream.share.zrok.io/video_feed" alt="Camera 2 Feed">
+        <div class="main-grid">
+            <!-- Camera Feed -->
+            <div class="camera-section">
+                <h2>Live Camera Feed</h2>
+                <div style="position: relative;">
+                    <img id="liveFeed" src="/video_feed" alt="Live Camera Feed" class="camera-feed">
+                    <div class="gesture-indicator" id="gestureIndicator">Gesture Detected!</div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Advanced Controls Modal -->
-    <div id="advancedControlsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAdvancedControls()">&times;</span>
-            <h2>Advanced Tracking Controls</h2>
-            
-            <div class="control-grid">
-                <!-- System Status Panel -->
-                <div class="control-panel">
-                    <h3>System Status <span id="status-indicator" class="status-indicator"></span></h3>
-                    <div class="metric">
-                        <span>Tracking Status:</span>
-                        <span class="metric-value" id="tracking-status">IDLE</span>
-                    </div>
-                    <div class="metric">
-                        <span>Camera FPS:</span>
-                        <span class="metric-value" id="fps">0</span>
-                    </div>
-                    <div class="metric">
-                        <span>Detection FPS:</span>
-                        <span class="metric-value" id="detection-fps">0</span>
-                    </div>
-                    <div class="metric">
-                        <span>CPU Temperature:</span>
-                        <span class="metric-value" id="cpu-temp">0°C</span>
-                    </div>
-                    <div class="metric">
-                        <span>Tracking Confidence:</span>
-                        <span class="metric-value" id="confidence">0%</span>
-                    </div>
-                    <div class="metric">
-                        <span>Active ROIs:</span>
-                        <span class="metric-value" id="roi-count">0</span>
-                    </div>
-                    <div class="metric">
-                        <span>Pan Position:</span>
-                        <span class="metric-value" id="pan-pos">90°</span>
-                    </div>
-                    <div class="metric">
-                        <span>Tilt Position:</span>
-                        <span class="metric-value" id="tilt-pos">90°</span>
-                    </div>
-                </div>
-
-                <!-- Performance Mode Panel -->
-                <div class="control-panel">
-                    <h3>Performance Mode</h3>
-                    <div class="mode-buttons-advanced">
-                        <button class="mode-button" onclick="setAdvancedMode('performance')">Performance</button>
-                        <button class="mode-button active" onclick="setAdvancedMode('balanced')">Balanced</button>
-                        <button class="mode-button" onclick="setAdvancedMode('quality')">Quality</button>
-                    </div>
-                    <div class="metric">
-                        <span>Processing Reduction:</span>
-                        <span class="metric-value" id="roi-reduction">0%</span>
-                    </div>
-                </div>
-
-                <!-- Face Recognition Panel -->
-                <div class="control-panel">
-                    <h3>Face Recognition</h3>
-                    <div class="metric">
-                        <span>Known Faces:</span>
-                        <span class="metric-value" id="known-faces">0</span>
-                    </div>
-                    <div class="face-controls">
-                        <input type="text" id="face-name" placeholder="Enter name">
-                        <input type="number" id="face-priority" placeholder="Priority" min="1" max="10" value="5">
-                        <button onclick="addFace()">Add Face</button>
-                    </div>
-                    <div id="face-list"></div>
-                </div>
-
-                <!-- PID Tuning Panel -->
-                <div class="control-panel">
-                    <h3>PID Controller</h3>
-                    <h4 style="color: #888; font-size: 14px;">Pan Axis</h4>
-                    <div class="slider-container">
-                        <label>Kp: <span id="pan-kp-value">0.008</span></label>
-                        <input type="range" class="slider" id="pan-kp" min="0" max="0.05" step="0.001" value="0.008" oninput="updatePID()">
-                    </div>
-                    <div class="slider-container">
-                        <label>Ki: <span id="pan-ki-value">0.0005</span></label>
-                        <input type="range" class="slider" id="pan-ki" min="0" max="0.01" step="0.0001" value="0.0005" oninput="updatePID()">
-                    </div>
-                    <div class="slider-container">
-                        <label>Kd: <span id="pan-kd-value">0.004</span></label>
-                        <input type="range" class="slider" id="pan-kd" min="0" max="0.05" step="0.001" value="0.004" oninput="updatePID()">
-                    </div>
-                    <button onclick="resetPID()" style="width: 100%; margin-top: 10px;">Reset to Defaults</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Camera Feed Section -->
-    <section class="center-screen">
-        <h2 id="cameraTitle">Live Camera Feed 1</h2>
-        <div class="tv-frame">
-            <div class="tv-inner-frame">
-                <div class="tv-screen" style="position: relative;">
-                    <!-- Loading overlay -->
-                    <div id="loadingOverlay" class="loading-overlay">
-                        <div>
-                            <i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 20px;"></i>
-                            <br>
-                            Loading camera feed...
+            <!-- Controls -->
+            <div class="controls-section">
+                <div class="control-group">
+                    <h3>📊 Live Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value" id="totalDetections">0</div>
+                            <div class="stat-label">Total Detections</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="recordingCount">0</div>
+                            <div class="stat-label">Recordings</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="personCount">0</div>
+                            <div class="stat-label">People</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="alertCount">0</div>
+                            <div class="stat-label">Alerts Sent</div>
                         </div>
                     </div>
-                    
-                    <img id="liveFeed" alt="Live Camera Feed" class="camera-feed" style="width: 100%; height: auto;">
-                    <button class="fullscreen-button" onclick="toggleFullScreen()">Full Screen</button>
-                    
-                    <!-- Tracking Info Overlay -->
-                    <div class="tracking-info" id="trackingInfo">
-                        <div style="font-weight: bold; margin-bottom: 5px;">Tracking Info</div>
-                        <div id="tracking-details"></div>
-                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>🎮 Camera Controls</h3>
+                    <button class="button" onclick="toggleRecording()">
+                        <span id="recordingStatus">🔴 Recording ON</span>
+                    </button>
+                    <button class="button success" onclick="takeSnapshot()">📸 Snapshot</button>
+                    <button class="button" onclick="showRecordings()">📹 View Recordings</button>
+                </div>
+
+                <div class="control-group">
+                    <h3>🚨 Activity Zones</h3>
+                    <div id="zonesList"></div>
+                </div>
+
+                <div class="control-group">
+                    <h3>👋 Gesture Commands</h3>
+                    <p style="font-size: 14px; color: #888; line-height: 1.6;">
+                        • <b>Wave</b>: Start/stop recording<br>
+                        • <b>Jump</b>: Take snapshot<br>
+                        • <b>Arms spread</b>: Toggle tracking
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- Disclaimer for Camera 2 -->
-        <p id="disclaimer">Please note: Camera 2 takes a while to load.</p>
-        
-        <!-- Mode Buttons -->
-        <div id="modeButtons" class="mode-buttons">
-            <!-- Buttons will be dynamically generated here -->
-        </div>
-
-        <!-- Manual Controls (hidden by default) -->
-        <div class="manual-controls" id="manual-controls">
-            <h3>Manual Control Mode Active</h3>
-            <div class="arrow-keys">
-                <div>
-                    <button class="arrow-key" onclick="sendKey('w')">↑</button>
-                </div>
-                <div>
-                    <button class="arrow-key" onclick="sendKey('a')">←</button>
-                    <button class="arrow-key" onclick="sendKey('c')">●</button>
-                    <button class="arrow-key" onclick="sendKey('d')">→</button>
-                </div>
-                <div>
-                    <button class="arrow-key" onclick="sendKey('s')">↓</button>
-                </div>
+        <!-- Recordings Section -->
+        <div class="recordings-section">
+            <h2>📹 Recent Recordings</h2>
+            <div class="recordings-list" id="recordingsList">
+                <!-- Recordings will be loaded here -->
             </div>
-            <button style="background-color: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" onclick="sendKey('x')">Exit Manual Mode</button>
-            <div id="manual-status"></div>
         </div>
+    </div>
 
-        <!-- Camera Toggle Button -->
-        <div class="camera-toggle">
-            <button onclick="toggleCamera()">Switch Camera</button>
+    <!-- Video Player Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Recording Playback</h2>
+            <video id="videoPlayer" controls></video>
+            <div id="videoInfo" style="margin-top: 15px;"></div>
         </div>
+    </div>
 
-        <!-- Control Buttons -->
-        <div class="control-buttons">
-            <h3>Camera Controls</h3>
-            <div class="arrow-keys">
-                <button class="arrow-key" onmousedown="startContinuousKey('w')" onmouseup="stopContinuousKey()">▲</button>
-                <button class="arrow-key" onmousedown="startContinuousKey('a')" onmouseup="stopContinuousKey()">◄</button>
-                <button class="arrow-key" onmousedown="startContinuousKey('s')" onmouseup="stopContinuousKey()">▼</button>
-                <button class="arrow-key" onmousedown="startContinuousKey('d')" onmouseup="stopContinuousKey()">►</button>
-            </div>
-
-            <h3>Laser Controls</h3>
-            <button class="laser-button" onmousedown="startContinuousKey('p')" onmouseup="stopContinuousKey()">Laser</button>
-            <button class="laser-button" onmousedown="startContinuousKey('i')" onmouseup="stopContinuousKey()">Random</button>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
-        <p>Follow us: 
-            <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/" target="_blank">LinkedIn</a> | 
-            <a href="https://twitter.com/yourusername" target="_blank">Twitter</a> | 
-            <a href="https://github.com/yourusername" target="_blank">GitHub</a>
-        </p>
-    </footer>
-
-    <!-- JavaScript -->
     <script>
-        // Update these URLs to match your zrok endpoints
-        const camera1URL = "https://camerastream1.share.zrok.io";  // Your actual zrok URL
-        const camera2URL = "https://camerastream.share.zrok.io";   // Your actual zrok URL
-        let currentCameraURL = camera1URL;
+        let stats = {};
+        let recordingEnabled = true;
 
-        // Existing variables
-        const activeKeys = {};
-        let keyPressInterval;
-        let statusUpdateInterval;
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("Initializing Advanced Tracking System...");
-            
-            // Set initial camera feed
-            const liveFeed = document.getElementById('liveFeed');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            
-            if (liveFeed) {
-                liveFeed.src = currentCameraURL + '/video_feed';
-                
-                liveFeed.onload = function() {
-                    console.log("Camera feed loaded");
-                    if (loadingOverlay) loadingOverlay.style.display = 'none';
-                };
-                
-                liveFeed.onerror = function() {
-                    console.log("Camera feed error, retrying...");
-                    setTimeout(() => {
-                        liveFeed.src = currentCameraURL + '/video_feed?t=' + new Date().getTime();
-                    }, 2000);
-                };
-            }
-            
-            // Initialize mode buttons
-            updateModeButtons();
-            
-            // Start status updates
-            statusUpdateInterval = setInterval(updateAdvancedStatus, 2000);
-            updateAdvancedStatus();
-        });
-
-        // Activate tracking mode
-        function activateMode(mode) {
-            console.log(`Activating mode ${mode}`);
-            
-            fetch(`${currentCameraURL}/activate_mode/${mode}`, { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                console.log(`Mode ${mode} activated:`, data);
-                
-                // Update button states
-                const buttons = document.querySelectorAll('#modeButtons button');
-                buttons.forEach((btn, index) => {
-                    btn.classList.toggle('active', index === mode - 1);
-                });
-                
-                // Show/hide manual controls for mode 3
-                const manualControls = document.getElementById('manual-controls');
-                if (manualControls) {
-                    manualControls.classList.toggle('active', mode === 3);
-                }
-            })
-            .catch(error => {
-                console.error('Error activating mode:', error);
-            });
-        }
-
-        // Send key input
-        function sendKey(key) {
-            console.log(`Sending key: ${key}`);
-            
-            fetch(`${currentCameraURL}/key_input`, {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({ key: key })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                console.log(`Key ${key} sent:`, data);
-                
-                // Update manual status
-                const manualStatus = document.getElementById('manual-status');
-                if (manualStatus && data.pan !== undefined && data.tilt !== undefined) {
-                    manualStatus.textContent = `Pan: ${data.pan.toFixed(1)}° | Tilt: ${data.tilt.toFixed(1)}°`;
-                }
-                
-                // Hide manual controls if exiting
-                if (key === 'x') {
-                    const manualControls = document.getElementById('manual-controls');
-                    if (manualControls) {
-                        manualControls.classList.remove('active');
-                    }
-                }
-            })
-            .catch(error => {
-                console.error("Error sending key:", error);
-            });
-        }
-
-        // Continuous key press handling
-        function startContinuousKey(key) {
-            clearInterval(keyPressInterval);
-            sendKey(key); // Send immediately
-            keyPressInterval = setInterval(() => sendKey(key), 100);
-        }
-
-        function stopContinuousKey() {
-            clearInterval(keyPressInterval);
-        }
-
-        // Set performance mode (Camera 1 only)
-        function setAdvancedMode(mode) {
-            if (currentCameraURL !== camera1URL) return;
-            
-            console.log(`Setting performance mode: ${mode}`);
-            
-            fetch(`${camera1URL}/api/set_mode`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({mode: mode})
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Performance mode set:', data);
-                
-                // Update button states
-                document.querySelectorAll('.mode-button').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.textContent.toLowerCase() === mode) {
-                        btn.classList.add('active');
-                    }
-                });
-            })
-            .catch(error => console.error('Error setting mode:', error));
-        }
-
-        // Toggle camera
-        function toggleCamera() {
-            currentCameraURL = currentCameraURL === camera1URL ? camera2URL : camera1URL;
-            
-            console.log(`Switched to camera: ${currentCameraURL === camera1URL ? '1' : '2'}`);
-            
-            // Update title
-            const cameraTitle = document.getElementById("cameraTitle");
-            if (cameraTitle) {
-                cameraTitle.textContent = currentCameraURL === camera1URL ? 
-                    "Live Camera Feed 1 - Advanced AI Tracking" : "Live Camera Feed 2";
-            }
-            
-            // Show/hide disclaimer
-            const disclaimer = document.getElementById("disclaimer");
-            if (disclaimer) {
-                disclaimer.classList.toggle("visible", currentCameraURL === camera2URL);
-            }
-            
-            // Hide manual controls
-            const manualControls = document.getElementById('manual-controls');
-            if (manualControls) {
-                manualControls.classList.remove('active');
-            }
-            
-            // Update mode buttons
-            updateModeButtons();
-            
-            // Refresh feed
-            refreshLiveFeed();
-        }
-
-        // Refresh live feed
-        function refreshLiveFeed() {
-            const img = document.getElementById("liveFeed");
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            
-            if (loadingOverlay) loadingOverlay.style.display = 'flex';
-            if (img) {
-                img.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
-            }
-        }
-
-        // Update mode buttons based on current camera
-        function updateModeButtons() {
-            const modeButtons = document.getElementById("modeButtons");
-            if (!modeButtons) return;
-            
-            modeButtons.innerHTML = "";
-            
-            const cameraModes = {
-                camera1: ["AI Track", "Face Priority", "Manual", "ROI Mode", "PID Test"],
-                camera2: ["MANUAL", "CLIENT"]
-            };
-            
-            const modes = currentCameraURL === camera1URL ? cameraModes.camera1 : cameraModes.camera2;
-            
-            modes.forEach((mode, index) => {
-                const button = document.createElement("button");
-                button.textContent = mode;
-                button.onclick = () => activateMode(index + 1);
-                if (index === 0) button.classList.add('active'); // Default first mode active
-                modeButtons.appendChild(button);
-            });
-        }
-
-        // Update advanced status (Camera 1 only)
-        function updateAdvancedStatus() {
-            if (currentCameraURL !== camera1URL) return;
-            
-            fetch(`${camera1URL}/api/status`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
+        // Update statistics every 2 seconds
+        function updateStats() {
+            fetch('/stats')
+                .then(response => response.json())
                 .then(data => {
-                    // Update status displays
-                    updateStatusDisplay('tracking-status', getTrackingStatusText(data.tracking_state));
-                    updateStatusDisplay('fps', data.performance_metrics.fps.toFixed(1));
-                    updateStatusDisplay('detection-fps', data.performance_metrics.detection_fps.toFixed(1));
-                    updateStatusDisplay('cpu-temp', data.performance_metrics.cpu_temp.toFixed(1) + '°C');
-                    updateStatusDisplay('confidence', (data.tracking_state.confidence * 100).toFixed(0) + '%');
+                    stats = data;
+                    document.getElementById('totalDetections').textContent = data.total_detections || 0;
+                    document.getElementById('recordingCount').textContent = data.recordings_made || 0;
+                    document.getElementById('personCount').textContent = data.person_count || 0;
+                    document.getElementById('alertCount').textContent = data.alerts_sent || 0;
                     
-                    // Update servo positions
-                    if (data.servo_positions) {
-                        updateStatusDisplay('pan-pos', data.servo_positions.pan.toFixed(1) + '°');
-                        updateStatusDisplay('tilt-pos', data.servo_positions.tilt.toFixed(1) + '°');
+                    // Check for gestures
+                    if (data.gestures_detected > (stats.gestures_detected || 0)) {
+                        showGestureIndicator();
                     }
-                    
-                    // Update status indicator
-                    const indicator = document.getElementById('status-indicator');
-                    if (indicator) {
-                        indicator.className = 'status-indicator';
-                        if (data.tracking_state.locked) {
-                            indicator.classList.add('status-locked');
-                        } else if (data.tracking_state.scanning) {
-                            indicator.classList.add('status-scanning');
-                        } else {
-                            indicator.classList.add('status-tracking');
-                        }
-                    }
-                    
-                    // Update ROI metrics
-                    if (data.roi_metrics) {
-                        updateStatusDisplay('roi-count', data.roi_metrics.num_rois);
-                        updateStatusDisplay('roi-reduction', 
-                            (data.roi_metrics.processing_reduction * 100).toFixed(1) + '%');
-                    }
-                    
-                    // Update known faces
-                    updateStatusDisplay('known-faces', data.known_faces);
-                    
-                    // Update tracking info overlay
-                    const trackingDetails = document.getElementById('tracking-details');
-                    if (trackingDetails && data.tracking_state.current_target_id !== null) {
-                        trackingDetails.innerHTML = `
-                            Target ID: ${data.tracking_state.current_target_id}<br>
-                            Mode: ${data.tracking_state.performance_mode}<br>
-                            Tracking: ${data.tracking_state.tracking_mode}<br>
-                            ROIs: ${data.roi_metrics ? data.roi_metrics.num_rois : 0}
-                        `;
-                    } else if (trackingDetails) {
-                        trackingDetails.innerHTML = 'No active target';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error updating status:', error);
                 });
         }
 
-        // Helper function to update status displays
-        function updateStatusDisplay(elementId, value) {
-            const element = document.getElementById(elementId);
-            if (element) {
-                element.textContent = value;
-            }
+        // Load recordings
+        function loadRecordings() {
+            fetch('/recordings')
+                .then(response => response.json())
+                .then(recordings => {
+                    const listEl = document.getElementById('recordingsList');
+                    listEl.innerHTML = '';
+                    
+                    recordings.slice(0, 10).forEach(rec => {
+                        const date = new Date(rec.created * 1000);
+                        const item = document.createElement('div');
+                        item.className = 'recording-item';
+                        item.onclick = () => playRecording(rec.filename);
+                        
+                        item.innerHTML = `
+                            <div class="recording-info">
+                                <strong>${rec.filename}</strong>
+                                <span class="recording-reason">${rec.reason || 'manual'}</span>
+                                <br>
+                                <small>${date.toLocaleString()} • ${(rec.size / 1024 / 1024).toFixed(1)} MB</small>
+                            </div>
+                            <button class="button">▶ Play</button>
+                        `;
+                        
+                        listEl.appendChild(item);
+                    });
+                    
+                    if (recordings.length === 0) {
+                        listEl.innerHTML = '<p style="text-align: center; color: #888;">No recordings yet</p>';
+                    }
+                });
         }
 
-        // Get tracking status text
-        function getTrackingStatusText(trackingState) {
-            if (trackingState.manual_control) return 'MANUAL';
-            if (trackingState.locked) return 'LOCKED';
-            if (trackingState.scanning) return 'SCANNING';
-            return 'TRACKING';
+        // Load zones
+        function loadZones() {
+            fetch('/zones')
+                .then(response => response.json())
+                .then(zones => {
+                    const listEl = document.getElementById('zonesList');
+                    listEl.innerHTML = '';
+                    
+                    zones.forEach(zone => {
+                        const item = document.createElement('div');
+                        item.className = 'zone-item';
+                        item.innerHTML = `
+                            <span>${zone.name}</span>
+                            <span>
+                                ${zone.alert ? '✅ Alert' : '❌ No Alert'}
+                                ${zone.sms ? '📱 SMS' : ''}
+                            </span>
+                        `;
+                        listEl.appendChild(item);
+                    });
+                });
         }
 
-        // Toggle advanced controls
-        function toggleAdvancedControls() {
-            const modal = document.getElementById("advancedControlsModal");
-            if (modal) {
-                if (modal.style.display === "block") {
-                    closeAdvancedControls();
-                } else {
-                    modal.style.display = "block";
-                    document.body.classList.add("advanced-controls-open");
-                    updateAdvancedStatus();
-                }
-            }
+        // Play recording
+        function playRecording(filename) {
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('videoPlayer');
+            const info = document.getElementById('videoInfo');
+            
+            player.src = `/recording/${filename}`;
+            info.innerHTML = `<strong>Playing:</strong> ${filename}`;
+            modal.style.display = 'block';
         }
 
-        function closeAdvancedControls() {
-            const modal = document.getElementById("advancedControlsModal");
-            if (modal) {
-                modal.style.display = "none";
-                document.body.classList.remove("advanced-controls-open");
-            }
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('videoPlayer');
+            modal.style.display = 'none';
+            player.pause();
         }
 
-        // View all feeds
-        function viewAllFeeds() {
-            const modal = document.getElementById("allFeedsModal");
-            if (modal) {
-                modal.style.display = "block";
-            }
+        // Toggle recording
+        function toggleRecording() {
+            fetch('/toggle_recording', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    recordingEnabled = data.recording_enabled;
+                    const statusEl = document.getElementById('recordingStatus');
+                    if (recordingEnabled) {
+                        statusEl.innerHTML = '🔴 Recording ON';
+                    } else {
+                        statusEl.innerHTML = '⚫ Recording OFF';
+                    }
+                });
         }
 
-        function closeAllFeeds() {
-            const modal = document.getElementById("allFeedsModal");
-            if (modal) {
-                modal.style.display = "none";
-            }
+        // Take snapshot
+        function takeSnapshot() {
+            fetch('/snapshot')
+                .then(response => response.json())
+                .then(data => {
+                    alert(`Snapshot saved: ${data.filename}`);
+                });
         }
 
-        // Toggle menu
-        function toggleMenu() {
-            const sideMenu = document.getElementById("sideMenu");
-            if (sideMenu) {
-                sideMenu.classList.toggle("open");
-            }
+        // Show gesture indicator
+        function showGestureIndicator() {
+            const indicator = document.getElementById('gestureIndicator');
+            indicator.style.display = 'block';
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 2000);
         }
 
-        // Toggle fullscreen
-        function toggleFullScreen() {
-            const feed = document.querySelector(".tv-screen");
-            if (!document.fullscreenElement) {
-                feed.requestFullscreen().catch(err => console.error(err));
-            } else {
-                document.exitFullscreen();
-            }
+        // Show recordings page
+        function showRecordings() {
+            loadRecordings();
         }
 
-        // Update PID
-        function updatePID() {
-            const panKp = document.getElementById('pan-kp');
-            const panKi = document.getElementById('pan-ki');
-            const panKd = document.getElementById('pan-kd');
-            
-            if (!panKp || !panKi || !panKd) return;
-            
-            // Update display values
-            document.getElementById('pan-kp-value').textContent = panKp.value;
-            document.getElementById('pan-ki-value').textContent = panKi.value;
-            document.getElementById('pan-kd-value').textContent = panKd.value;
-            
-            const pidData = {
-                pan: {
-                    kp: parseFloat(panKp.value),
-                    ki: parseFloat(panKi.value),
-                    kd: parseFloat(panKd.value)
-                }
-            };
-            
-            fetch(`${camera1URL}/api/pid_tune`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(pidData)
-            })
-            .then(response => response.json())
-            .then(data => console.log('PID updated:', data))
-            .catch(error => console.error('Error updating PID:', error));
-        }
-
-        // Reset PID
-        function resetPID() {
-            const panKp = document.getElementById('pan-kp');
-            const panKi = document.getElementById('pan-ki');
-            const panKd = document.getElementById('pan-kd');
-            
-            if (panKp) panKp.value = 0.008;
-            if (panKi) panKi.value = 0.0005;
-            if (panKd) panKd.value = 0.004;
-            
-            updatePID();
-        }
-
-        // Add face
-        function addFace() {
-            const nameInput = document.getElementById('face-name');
-            const priorityInput = document.getElementById('face-priority');
-            
-            if (!nameInput || !priorityInput) return;
-            
-            const name = nameInput.value;
-            const priority = priorityInput.value;
-            
-            if (!name) {
-                alert('Please enter a name');
-                return;
-            }
-            
-            fetch(`${camera1URL}/api/add_face`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({name: name, priority: parseInt(priority)})
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                nameInput.value = '';
-                priorityInput.value = '5';
-            })
-            .catch(error => console.error('Error adding face:', error));
-        }
-
-        // Keyboard event handlers
-        document.addEventListener("keydown", function(event) {
-            const key = event.key.toLowerCase();
-            
-            // Only handle in manual mode or if manual controls are visible
-            const manualControls = document.getElementById('manual-controls');
-            if (manualControls && manualControls.classList.contains('active')) {
-                event.preventDefault();
-                
-                if (!activeKeys[key]) {
-                    activeKeys[key] = true;
-                    startContinuousKey(key);
-                }
-            }
-        });
-
-        document.addEventListener("keyup", function(event) {
-            const key = event.key.toLowerCase();
-            
-            if (activeKeys[key]) {
-                activeKeys[key] = false;
-                stopContinuousKey();
-            }
-        });
-
-        // Window click handler for modals
+        // Close modal when clicking outside
         window.onclick = function(event) {
-            const feedsModal = document.getElementById("allFeedsModal");
-            const advancedModal = document.getElementById("advancedControlsModal");
-            
-            if (event.target === feedsModal) {
-                closeAllFeeds();
+            const modal = document.getElementById('videoModal');
+            if (event.target === modal) {
+                closeModal();
             }
-            if (event.target === advancedModal) {
-                closeAdvancedControls();
-            }
-        };
+        }
 
-        // Cleanup on page unload
-        window.onbeforeunload = function() {
-            if (statusUpdateInterval) {
-                clearInterval(statusUpdateInterval);
-            }
-            if (keyPressInterval) {
-                clearInterval(keyPressInterval);
-            }
-        };
-
-        console.log("Advanced Tracking System JavaScript loaded successfully");
+        // Initialize
+        updateStats();
+        loadRecordings();
+        loadZones();
+        
+        // Update periodically
+        setInterval(updateStats, 2000);
+        setInterval(loadRecordings, 10000);
     </script>
 </body>
 </html>
