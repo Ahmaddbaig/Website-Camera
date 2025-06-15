@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Feed | Raspberry Pi Project</title>
+    <link rel="stylesheet" href="camera.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Performance optimizations */
+        * {
+            will-change: auto;
+        }
+        
+        .camera-feed {
+            will-change: transform;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        /* Switch camera button styles */
+        .camera-toggle button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .camera-toggle button:hover {
+            background-color: #45a049;
+        }
+
+        .camera-toggle button:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+        }
+
+        /* Disclaimer for Camera 2 */
+        #disclaimer {
+            display: none;
+            color: #ff9800;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        #disclaimer.visible {
+            display: block;
+        }
+
+        .view-all-feeds {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        .view-all-feeds button {
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-all-feeds button:hover {
+            background-color: #007bb5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            margin: 5% auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            width: 80%;
+            text-align: center;
+        }
+
+        .feeds-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feeds-grid .feed img {
+            width: 100%;
+            height: auto;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* FPS counter */
+        #fpsCounter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #00ff00;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        /* Loading indicator */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            display: none;
+        }
+
+        .tv-screen {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo Section -->
+    <div class="logo" onclick="location.href='index.html'">
+        <div class="sentry">SENTRY</div>
+        <div class="security">SECURITY</div>
+    </div>
+
+    <!-- Hamburger Menu Button -->
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+
+    <!-- Sidebar Menu -->
+    <div id="sideMenu" class="side-menu">
+        <button onclick="location.href='other.html'">Home</button>
+        <button onclick="location.href='meet.html'">Meet The Team</button>
+        <button onclick="location.href='buying.html'">Product</button>
+        <button onclick="location.href='features.html'">Project Features</button>
+        <button onclick="location.href='faq.html'">FAQ</button>
+        <button onclick="location.href='contact.html'">Contact</button>
+        <button onclick="location.href='login.html'">Login</button>
+        <button onclick="location.href='other.html'">DEMO Page</button>
+    </div>
+
+    <!-- View All Feeds Button -->
+    <div class="view-all-feeds">
+        <button onclick="viewAllFeeds()">View All Feeds</button>
+    </div>
+
+    <!-- Modal for All Feeds -->
+    <div id="allFeedsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAllFeeds()">&times;</span>
+            <h2>All Camera Feeds</h2>
+            <div class="feeds-grid">
+                <div class="feed">
+                    <h3>Camera 1</h3>
+                    <img src="https://camerastream1.share.zrok.io/video_feed" alt="Camera 1 Feed">
+                </div>
+                <div class="feed">
+                    <h3>Camera 2</h3>
+                    <img src="https://camerastream.share.zrok.io/video_feed" alt="Camera 2 Feed">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Feed Section -->
+    <section class="center-screen">
+        <h2 id="cameraTitle">Live Camera Feed 1</h2>
+        <div class="tv-frame">
+            <div class="tv-inner-frame">
+                <div class="tv-screen">
+                    <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed">
+                    <div id="fpsCounter">FPS: 0</div>
+                    <div class="loading-indicator" id="loadingIndicator">Loading...</div>
+                    <button class="fullscreen-button" onclick="toggleFullScreen()">Full Screen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclaimer for Camera 2 -->
+        <p id="disclaimer">Please note: Camera 2 takes a while to load.</p>
+        
+        <!-- Mode Buttons -->
+        <div id="modeButtons" class="mode-buttons">
+            <!-- Buttons will be dynamically generated here -->
+        </div>
+
+        <!-- Camera Toggle Button -->
+        <div class="camera-toggle">
+            <button onclick="toggleCamera()">Switch Camera</button>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="control-buttons">
+            <h3>Camera Controls</h3>
+            <div class="arrow-keys">
+                <button class="arrow-key" onmousedown="startContinuousKey('w')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('w')" ontouchend="stopContinuousKey()">▲</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('a')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('a')" ontouchend="stopContinuousKey()">◄</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('s')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('s')" ontouchend="stopContinuousKey()">▼</button>
+                <button class="arrow-key" onmousedown="startContinuousKey('d')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('d')" ontouchend="stopContinuousKey()">►</button>
+            </div>
+
+            <h3>Laser Controls</h3>
+            <button class="laser-button" onmousedown="startContinuousKey('p')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('p')" ontouchend="stopContinuousKey()">Laser</button>
+            <button class="laser-button" onmousedown="startContinuousKey('i')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('i')" ontouchend="stopContinuousKey()">Random</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+        <p>Follow us: 
+            <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/" target="_blank">LinkedIn</a> | 
+            <a href="https://twitter.com/yourusername" target="_blank">Twitter</a> | 
+            <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        </p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Performance optimization flags
+        let isRequestingFrame = false;
+        let lastFrameTime = Date.now();
+        let frameCount = 0;
+        let fps = 0;
+
+        // Sidebar toggle logic
+        function toggleMenu() {
+            document.getElementById("sideMenu").classList.toggle("open");
+        }
+
+        // Track active keys to prevent duplicate events
+        const activeKeys = {};
+
+        // Handle keyboard events with debouncing
+        document.addEventListener("keydown", function (event) {
+            const key = event.key.toLowerCase();
+            if (!activeKeys[key]) {
+                activeKeys[key] = true;
+                startContinuousKey(key);
+            }
+        });
+
+        document.addEventListener("keyup", function (event) {
+            const key = event.key.toLowerCase();
+            if (activeKeys[key]) {
+                activeKeys[key] = false;
+                stopContinuousKey();
+            }
+        });
+
+        // Optimized continuous key commands
+        let keyPressInterval;
+        let lastKeyTime = 0;
+        const KEY_THROTTLE = 50; // Minimum ms between key sends
+
+        function startContinuousKey(key) {
+            clearInterval(keyPressInterval);
+            sendKey(key); // Send immediately
+            keyPressInterval = setInterval(() => sendKey(key), 100);
+        }
+
+        function stopContinuousKey() {
+            clearInterval(keyPressInterval);
+        }
+
+        // Throttled key sending
+        function sendKey(key) {
+            const now = Date.now();
+            if (now - lastKeyTime < KEY_THROTTLE) return;
+            lastKeyTime = now;
+
+            fetch(`${currentActivationModeURL}/key_input`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key })
+            })
+            .then(response => response.json())
+            .then(data => console.log(`Key ${key} sent:`, data.status))
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Activate camera mode
+        function activateMode(mode) {
+            fetch(`${currentActivationModeURL}/activate_mode/${mode}`, { method: "POST" })
+            .then(response => response.json())
+            .then(data => console.log(`Mode ${mode} activated:`, data.status))
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Fullscreen toggle
+        function toggleFullScreen() {
+            const feed = document.querySelector(".tv-screen");
+            if (!document.fullscreenElement) {
+                feed.requestFullscreen().catch(err => console.error(err));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Camera URLs
+        let camera1URL = "https://camerastream1.share.zrok.io";
+        let camera2URL = "https://camerastream.share.zrok.io";
+        let activationMode1URL = "https://activationmode1.share.zrok.io";
+        let activationMode2URL = "https://activationmode.share.zrok.io";
+        let currentCameraURL = camera1URL;
+        let currentActivationModeURL = activationMode1URL;
+
+        const cameraModes = {
+            camera1: ["NCNN", "LASER", "MANUAL", "CLIENT", "SmartHash"],
+            camera2: ["MANUAL", "CLIENT"]
+        };
+
+        function toggleCamera() {
+            currentCameraURL = currentCameraURL === camera1URL ? camera2URL : camera1URL;
+            currentActivationModeURL = currentCameraURL === camera1URL ? activationMode1URL : activationMode2URL;
+
+            document.getElementById("cameraTitle").textContent = currentCameraURL === camera1URL ? "Live Camera Feed 1" : "Live Camera Feed 2";
+
+            // Show disclaimer for Camera 2
+            const disclaimer = document.getElementById("disclaimer");
+            if (currentCameraURL === camera2URL) {
+                disclaimer.classList.add("visible");
+            } else {
+                disclaimer.classList.remove("visible");
+            }
+
+            // Update feed source
+            const img = document.getElementById("liveFeed");
+            img.src = `${currentCameraURL}/video_feed`;
+
+            closeAllFeeds();
+            updateModeButtons();
+        }
+
+        // Update mode buttons dynamically
+        function updateModeButtons() {
+            const modeButtons = document.getElementById("modeButtons");
+            modeButtons.innerHTML = "";
+
+            const modes = currentCameraURL === camera1URL ? cameraModes.camera1 : cameraModes.camera2;
+            modes.forEach((mode, index) => {
+                const button = document.createElement("button");
+                button.textContent = mode;
+                button.onclick = () => activateMode(index + 1);
+                modeButtons.appendChild(button);
+            });
+        }
+
+        // Modal functions
+        function viewAllFeeds() {
+            document.getElementById("allFeedsModal").style.display = "block";
+        }
+
+        function closeAllFeeds() {
+            document.getElementById("allFeedsModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById("allFeedsModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        // FPS monitoring
+        function updateFPS() {
+            const img = document.getElementById("liveFeed");
+            
+            img.onload = function() {
+                frameCount++;
+                const now = Date.now();
+                const elapsed = now - lastFrameTime;
+                
+                if (elapsed >= 1000) {
+                    fps = Math.round((frameCount * 1000) / elapsed);
+                    document.getElementById("fpsCounter").textContent = `FPS: ${fps}`;
+                    frameCount = 0;
+                    lastFrameTime = now;
+                }
+            };
+        }
+
+        // Initialize
+        updateModeButtons();
+        updateFPS();
+
+        // Handle touch events for mobile
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.classList.contains('arrow-key') || e.target.classList.contains('laser-button')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
