@@ -298,6 +298,21 @@
         body.advanced-controls-open .tv-frame {
             margin: 10px auto;
         }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -443,14 +458,18 @@
         <h2 id="cameraTitle">Live Camera Feed 1</h2>
         <div class="tv-frame">
             <div class="tv-inner-frame">
-                <div class="tv-screen">
-                    <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed" loading="eager">
-                    <button class="fullscreen-button" onclick="toggleFullScreen()">Full Screen</button>
-                    
-                    <!-- Loading indicator -->
-                    <div id="loadingIndicator" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
-                        <i class="fas fa-spinner fa-spin"></i> Connecting to camera...
+                <div class="tv-screen" style="position: relative;">
+                    <!-- Loading overlay -->
+                    <div id="loadingOverlay" class="loading-overlay">
+                        <div>
+                            <i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 20px;"></i>
+                            <br>
+                            Loading camera feed...
+                        </div>
                     </div>
+                    
+                    <img id="liveFeed" alt="Live Camera Feed" class="camera-feed" style="width: 100%; height: auto;">
+                    <button class="fullscreen-button" onclick="toggleFullScreen()">Full Screen</button>
                     
                     <!-- Tracking Info Overlay -->
                     <div class="tracking-info" id="trackingInfo">
@@ -517,6 +536,35 @@
             camera2: ["MANUAL", "CLIENT"]
         };
 
+        // Initialize camera feed on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Page loaded, initializing camera feed...");
+            
+            // Hide loading overlay initially
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const liveFeed = document.getElementById('liveFeed');
+            
+            // Set initial camera URL
+            liveFeed.src = currentCameraURL + '/video_feed';
+            
+            // When image loads successfully
+            liveFeed.onload = function() {
+                console.log("Camera feed loaded successfully");
+                loadingOverlay.style.display = 'none';
+            };
+            
+            // When image fails to load
+            liveFeed.onerror = function() {
+                console.log("Camera feed error, retrying...");
+                setTimeout(() => {
+                    liveFeed.src = currentCameraURL + '/video_feed?t=' + new Date().getTime();
+                }, 2000);
+            };
+            
+            // Initialize mode buttons
+            updateModeButtons();
+        });
+
         // Sidebar toggle logic
         function toggleMenu() {
             document.getElementById("sideMenu").classList.toggle("open");
@@ -579,29 +627,13 @@
             }
         }
 
-        // Refresh live feed with better error handling
+        // Refresh live feed
         function refreshLiveFeed() {
             const img = document.getElementById("liveFeed");
-            const loadingIndicator = document.getElementById("loadingIndicator");
+            const loadingOverlay = document.getElementById('loadingOverlay');
             
-            // Show loading indicator
-            loadingIndicator.style.display = "block";
-            
-            // Create new image element to test connection
-            const testImg = new Image();
-            testImg.onload = function() {
-                // Connection successful, update main feed
-                img.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
-                loadingIndicator.style.display = "none";
-            };
-            testImg.onerror = function() {
-                // Connection failed, retry in 2 seconds
-                console.error("Failed to connect to camera feed, retrying...");
-                setTimeout(refreshLiveFeed, 2000);
-            };
-            
-            // Test connection
-            testImg.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
+            loadingOverlay.style.display = 'flex';
+            img.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
         }
 
         // Toggle camera
@@ -804,42 +836,12 @@
             }
         };
 
-        // Initialize
-        updateModeButtons();
-        
-        // Auto-refresh video feed on error
-        document.getElementById("liveFeed").onerror = function() {
-            console.log("Video feed error, attempting to reconnect...");
-            setTimeout(() => {
-                refreshLiveFeed();
-            }, 1000);
-        };
-        
-        // Periodic refresh to ensure connection
-        setInterval(() => {
-            const img = document.getElementById("liveFeed");
-            // Check if image is not loading properly
-            if (img.complete && img.naturalHeight === 0) {
-                console.log("Video feed seems disconnected, refreshing...");
-                refreshLiveFeed();
-            }
-        }, 5000);
-        
         // Update advanced status every 2 seconds when modal is open
         setInterval(() => {
             if (document.getElementById("advancedControlsModal").style.display === "block") {
                 updateAdvancedStatus();
             }
         }, 2000);
-        
-        // Auto-start video feed on page load
-        window.onload = function() {
-            refreshLiveFeed();
-            // Set initial camera to camera 1
-            if (currentCameraURL !== camera1URL) {
-                toggleCamera();
-            }
-        };
     </script>
 </body>
 </html>
