@@ -688,7 +688,10 @@
 
             closeAllFeeds();
             updateModeButtons();
-            refreshLiveFeed();
+            
+            // Update the video feed source
+            const img = document.getElementById("liveFeed");
+            img.src = `${currentCameraURL}/video_feed`;
         }
 
         function updateModeButtons() {
@@ -720,8 +723,12 @@
         };
 
         function refreshLiveFeed() {
+            // Don't add timestamp to video feed - it causes reconnections
+            // The video feed is already a live stream
             const img = document.getElementById("liveFeed");
-            img.src = `${currentCameraURL}/video_feed?timestamp=${new Date().getTime()}`;
+            if (!img.src.includes('/video_feed')) {
+                img.src = `${currentCameraURL}/video_feed`;
+            }
         }
 
         // Advanced Features JavaScript
@@ -962,7 +969,8 @@
 
         // Initialize
         updateModeButtons();
-        setInterval(refreshLiveFeed, 1000);
+        // Don't refresh video feed - it's already streaming
+        // setInterval(refreshLiveFeed, 1000);  // Removed this line
         setInterval(updateStats, 1000);
         setInterval(update3DMap, 5000);
         
