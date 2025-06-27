@@ -197,7 +197,7 @@
                 </div>
                 <div class="feed">
                     <h3>Camera 2</h3>
-                    <img src=" https://camerajetstream.share.zrok.io/video_feed" alt="Camera 2 Feed">
+                    <img src="https://camerajetstream.share.zrok.io/video_feed" alt="Camera 2 Feed">
                 </div>
             </div>
         </div>
@@ -209,7 +209,7 @@
         <div class="tv-frame">
             <div class="tv-inner-frame">
                 <div class="tv-screen">
-                    <img id="liveFeed" src="https://camerajetstream.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed">
+                    <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed">
                     <div id="fpsCounter">FPS: 0</div>
                     <div class="loading-indicator" id="loadingIndicator">Loading...</div>
                     <button class="fullscreen-button" onclick="toggleFullScreen()">Full Screen</button>
@@ -258,8 +258,20 @@
 
     <!-- JavaScript -->
     <script>
-        // Performance optimization flags
-        let isRequestingFrame = false;
+        // --- Camera URLs (no spaces, correct spelling) ---
+        let camera1URL = "https://camerastream1.share.zrok.io";
+        let camera2URL = "https://camerajetstream.share.zrok.io";
+        let activationMode1URL = "https://activationmode1.share.zrok.io";
+        let activationMode2URL = "https://activationmode.share.zrok.io";
+        let currentCameraURL = camera1URL;
+        let currentActivationModeURL = activationMode1URL;
+
+        const cameraModes = {
+            camera1: ["NCNN", "LASER", "MANUAL", "CLIENT", "SmartHash"],
+            camera2: ["MANUAL", "CLIENT"]
+        };
+
+        // FPS variables
         let lastFrameTime = Date.now();
         let frameCount = 0;
         let fps = 0;
@@ -304,12 +316,10 @@
             clearInterval(keyPressInterval);
         }
 
-        // Throttled key sending
         function sendKey(key) {
             const now = Date.now();
             if (now - lastKeyTime < KEY_THROTTLE) return;
             lastKeyTime = now;
-
             fetch(`${currentActivationModeURL}/key_input`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -320,7 +330,6 @@
             .catch(error => console.error("Error:", error));
         }
 
-        // Activate camera mode
         function activateMode(mode) {
             fetch(`${currentActivationModeURL}/activate_mode/${mode}`, { method: "POST" })
             .then(response => response.json())
@@ -338,23 +347,11 @@
             }
         }
 
-        // Camera URLs
-        let camera1URL = "https://camerastream1.share.zrok.io";
-        let camera2URL = " https://camerajetstream.share.zrok.io";
-        let activationMode1URL = "https://activationmode1.share.zrok.io";
-        let activationMode2URL = "https://activationmode.share.zrok.io";
-        let currentCameraURL = camera1URL;
-        let currentActivationModeURL = activationMode1URL;
-
-        const cameraModes = {
-            camera1: ["NCNN", "LASER", "MANUAL", "CLIENT", "SmartHash"],
-            camera2: ["MANUAL", "CLIENT"]
-        };
-
+        // --- Improved Camera Switcher ---
         function toggleCamera() {
+            // Swap URL/activation mode
             currentCameraURL = currentCameraURL === camera1URL ? camera2URL : camera1URL;
             currentActivationModeURL = currentCameraURL === camera1URL ? activationMode1URL : activationMode2URL;
-
             document.getElementById("cameraTitle").textContent = currentCameraURL === camera1URL ? "Live Camera Feed 1" : "Live Camera Feed 2";
 
             // Show disclaimer for Camera 2
@@ -365,9 +362,40 @@
                 disclaimer.classList.remove("visible");
             }
 
-            // Update feed source
-            const img = document.getElementById("liveFeed");
-            img.src = `${currentCameraURL}/video_feed`;
+            // Show loading spinner
+            document.getElementById("loadingIndicator").style.display = "block";
+
+            // Remove old img and create a new one
+            const tvScreen = document.querySelector(".tv-screen");
+            let oldImg = document.getElementById("liveFeed");
+            if (oldImg) oldImg.remove();
+            const newImg = document.createElement("img");
+            newImg.id = "liveFeed";
+            newImg.className = "camera-feed";
+            newImg.alt = "Live Camera Feed";
+            newImg.src = `${currentCameraURL}/video_feed`;
+
+            // Hide spinner when image loads
+            newImg.onload = function() {
+                document.getElementById("loadingIndicator").style.display = "none";
+                // FPS calculation
+                frameCount++;
+                const now = Date.now();
+                const elapsed = now - lastFrameTime;
+                if (elapsed >= 1000) {
+                    fps = Math.round((frameCount * 1000) / elapsed);
+                    document.getElementById("fpsCounter").textContent = `FPS: ${fps}`;
+                    frameCount = 0;
+                    lastFrameTime = now;
+                }
+            };
+
+            // Reset FPS counter for new feed
+            frameCount = 0;
+            lastFrameTime = Date.now();
+
+            // Insert at top of tvScreen
+            tvScreen.insertBefore(newImg, tvScreen.firstChild);
 
             closeAllFeeds();
             updateModeButtons();
@@ -391,12 +419,9 @@
         function viewAllFeeds() {
             document.getElementById("allFeedsModal").style.display = "block";
         }
-
         function closeAllFeeds() {
             document.getElementById("allFeedsModal").style.display = "none";
         }
-
-        // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById("allFeedsModal");
             if (event.target === modal) {
@@ -404,15 +429,15 @@
             }
         };
 
-        // FPS monitoring
+        // FPS monitoring (for initial load)
         function updateFPS() {
             const img = document.getElementById("liveFeed");
-            
+            if (!img) return;
             img.onload = function() {
+                document.getElementById("loadingIndicator").style.display = "none";
                 frameCount++;
                 const now = Date.now();
                 const elapsed = now - lastFrameTime;
-                
                 if (elapsed >= 1000) {
                     fps = Math.round((frameCount * 1000) / elapsed);
                     document.getElementById("fpsCounter").textContent = `FPS: ${fps}`;
@@ -422,7 +447,7 @@
             };
         }
 
-        // Initialize
+        // On initial load
         updateModeButtons();
         updateFPS();
 
