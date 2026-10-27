@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Feed | Sentry Security Advanced</title>
+    <link rel="stylesheet" href="camera.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Performance optimizations */
+        * {
+            will-change: auto;
+        }
+        
+        .camera-feed {
+            will-change: transform;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        /* Advanced Stats Dashboard */
+        .stats-dashboard {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 100;
+            min-width: 200px;
+        }
+
+        .stats-dashboard h4 {
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 2px 0;
+        }
+
+        .stat-value {
+            color: #0ff;
+        }
+
+        /* Hardware Monitor */
+        .hardware-monitor {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 100;
+        }
+
+        .hardware-item {
+            margin: 3px 0;
+        }
+
+        .gpu-usage { color: #ff6b6b; }
+        .cpu-usage { color: #4ecdc4; }
+        .temperature { color: #ffd93d; }
+        .power-usage { color: #95e1d3; }
+
+        /* Tracking Status */
+        .tracking-status {
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+
+        .tracking-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 1s infinite;
+        }
+
+        .tracking-active { background-color: #00ff00; }
+        .tracking-lost { background-color: #ff0000; }
+        .tracking-searching { background-color: #ffff00; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Advanced Controls Panel */
+        .advanced-controls {
+            background-color: rgba(30, 30, 30, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: rgba(50, 50, 50, 0.8);
+            border-radius: 8px;
+        }
+
+        .control-section h3 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        /* Slider Controls */
+        .slider-control {
+            margin: 10px 0;
+        }
+
+        .slider-control label {
+            color: #fff;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4ecdc4;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            color: #0ff;
+            float: right;
+            font-family: monospace;
+        }
+
+        /* Detection Settings */
+        .detection-settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detection-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            background-color: rgba(70, 70, 70, 0.8);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #4ecdc4;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Recording Controls */
+        .recording-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .record-button {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .record-button:hover {
+            background-color: #ff3838;
+            transform: scale(1.05);
+        }
+
+        .record-button.recording {
+            animation: recordPulse 1s infinite;
+        }
+
+        @keyframes recordPulse {
+            0% { background-color: #ff4757; }
+            50% { background-color: #ff0000; }
+            100% { background-color: #ff4757; }
+        }
+
+        /* WebSocket Status */
+        .websocket-status {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .ws-connected {
+            background-color: #00ff00;
+            color: #000;
+        }
+
+        .ws-disconnected {
+            background-color: #ff0000;
+            color: #fff;
+        }
+
+        /* Log Panel */
+        .log-panel {
+            position: fixed;
+            bottom: 60px;
+            right: 10px;
+            width: 300px;
+            max-height: 200px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 11px;
+            color: #0ff;
+            display: none;
+            z-index: 100;
+        }
+
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px;
+        }
+
+        .log-error { color: #ff4757; }
+        .log-warning { color: #ffd93d; }
+        .log-info { color: #0ff; }
+        .log-success { color: #00ff00; }
+
+        /* Calibration Modal */
+        .calibration-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .calibration-content {
+            margin: 5% auto;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            width: 60%;
+            max-width: 600px;
+            color: #fff;
+        }
+
+        .calibration-step {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(50, 50, 50, 0.8);
+            border-radius: 8px;
+        }
+
+        .calibration-button {
+            background-color: #4ecdc4;
+            color: #000;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        /* AI Mode Indicator */
+        .ai-mode-indicator {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .ai-mode-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #4ecdc4;
+            border-radius: 50%;
+            animation: aiPulse 2s infinite;
+        }
+
+        @keyframes aiPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Motion Detection Overlay */
+        .motion-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .motion-zone {
+            position: absolute;
+            border: 2px dashed #ff0;
+            background-color: rgba(255, 255, 0, 0.1);
+        }
+
+        /* Loading indicator enhancement */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            display: none;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #4ecdc4;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive enhancements */
+        @media (max-width: 768px) {
+            .stats-dashboard,
+            .hardware-monitor,
+            .tracking-status {
+                font-size: 10px;
+                padding: 8px;
+            }
+            
+            .advanced-controls {
+                padding: 15px;
+            }
+            
+            .detection-settings {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo Section -->
+    <div class="logo" onclick="location.href='index.html'">
+        <div class="sentry">SENTRY</div>
+        <div class="security">SECURITY</div>
+    </div>
+
+    <!-- Hamburger Menu Button -->
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+
+    <!-- Sidebar Menu -->
+    <div id="sideMenu" class="side-menu">
+        <button onclick="location.href='other.html'">Home</button>
+        <button onclick="location.href='meet.html'">Meet The Team</button>
+        <button onclick="location.href='buying.html'">Product</button>
+        <button onclick="location.href='features.html'">Project Features</button>
+        <button onclick="location.href='faq.html'">FAQ</button>
+        <button onclick="location.href='contact.html'">Contact</button>
+        <button onclick="location.href='login.html'">Login</button>
+        <button onclick="location.href='other.html'">DEMO Page</button>
+        <button onclick="toggleLogPanel()">Show Logs</button>
+        <button onclick="openCalibration()">Calibrate System</button>
+    </div>
+
+    <!-- View All Feeds Button -->
+    <div class="view-all-feeds">
+        <button onclick="viewAllFeeds()">View All Feeds</button>
+    </div>
+
+    <!-- AI Mode Indicator -->
+    <div class="ai-mode-indicator" id="aiModeIndicator" style="display: none;">
+        <div class="ai-mode-icon"></div>
+        <span id="aiModeText">AI Tracking Active</span>
+    </div>
+
+    <!-- Modal for All Feeds -->
+    <div id="allFeedsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAllFeeds()">&times;</span>
+            <h2>All Camera Feeds</h2>
+            <div class="feeds-grid">
+                <div class="feed">
+                    <h3>Camera 1</h3>
+                    <img src="https://camerastream1.share.zrok.io/video_feed" alt="Camera 1 Feed">
+                </div>
+                <div class="feed">
+                    <h3>Camera 2</h3>
+                    <img src="https://camerajetstream.share.zrok.io/video_feed" alt="Camera 2 Feed">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calibration Modal -->
+    <div id="calibrationModal" class="calibration-modal">
+        <div class="calibration-content">
+            <span class="close" onclick="closeCalibration()">&times;</span>
+            <h2>System Calibration</h2>
+            <div class="calibration-step">
+                <h3>Step 1: Camera Calibration</h3>
+                <p>Position the camera to center view</p>
+                <button class="calibration-button" onclick="calibrateCamera()">Start Camera Calibration</button>
+            </div>
+            <div class="calibration-step">
+                <h3>Step 2: Servo Calibration</h3>
+                <p>Test servo movement range</p>
+                <button class="calibration-button" onclick="calibrateServos()">Calibrate Servos</button>
+            </div>
+            <div class="calibration-step">
+                <h3>Step 3: Detection Calibration</h3>
+                <p>Optimize detection parameters</p>
+                <button class="calibration-button" onclick="calibrateDetection()">Calibrate Detection</button>
+            </div>
+            <div id="calibrationStatus" style="margin-top: 20px; color: #4ecdc4;"></div>
+        </div>
+    </div>
+
+    <!-- Camera Feed Section -->
+    <section class="center-screen">
+        <h2 id="cameraTitle">Live Camera Feed 1</h2>
+        <div class="tv-frame">
+            <div class="tv-inner-frame">
+                <div class="tv-screen">
+                    <img id="liveFeed" src="https://camerastream1.share.zrok.io/video_feed" alt="Live Camera Feed" class="camera-feed">
+                    
+                    <!-- Stats Dashboard -->
+                    <div class="stats-dashboard">
+                        <h4>Performance Stats</h4>
+                        <div class="stat-item">
+                            <span>FPS:</span>
+                            <span class="stat-value" id="fpsValue">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Latency:</span>
+                            <span class="stat-value" id="latencyValue">0ms</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Detections:</span>
+                            <span class="stat-value" id="detectionsValue">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Confidence:</span>
+                            <span class="stat-value" id="confidenceValue">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Tracking Status -->
+                    <div class="tracking-status">
+                        <span class="tracking-indicator tracking-searching" id="trackingIndicator"></span>
+                        <span id="trackingStatusText">Searching...</span>
+                    </div>
+
+                    <!-- Hardware Monitor -->
+                    <div class="hardware-monitor">
+                        <div class="hardware-item gpu-usage">GPU: <span id="gpuUsage">0%</span></div>
+                        <div class="hardware-item cpu-usage">CPU: <span id="cpuUsage">0%</span></div>
+                        <div class="hardware-item temperature">Temp: <span id="temperature">0°C</span></div>
+                        <div class="hardware-item power-usage">Power: <span id="powerUsage">0W</span></div>
+                    </div>
+
+                    <!-- Motion Detection Overlay -->
+                    <div class="motion-overlay" id="motionOverlay"></div>
+
+                    <div class="loading-indicator" id="loadingIndicator">
+                        <div class="loading-spinner"></div>
+                        <p>Loading camera feed...</p>
+                    </div>
+                    
+                    <button class="fullscreen-button" onclick="toggleFullScreen()">Full Screen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclaimer for Camera 2 -->
+        <p id="disclaimer">Please note: Camera 2 takes a while to load.</p>
+        
+        <!-- Mode Buttons -->
+        <div id="modeButtons" class="mode-buttons">
+            <!-- Buttons will be dynamically generated here -->
+        </div>
+
+        <!-- Camera Toggle Button -->
+        <div class="camera-toggle">
+            <button onclick="toggleCamera()">Switch Camera</button>
+        </div>
+
+        <!-- Advanced Controls Panel -->
+        <div class="advanced-controls">
+            <!-- Tracking Controls -->
+            <div class="control-section">
+                <h3>Tracking Controls</h3>
+                <div class="slider-control">
+                    <label>Tracking Speed <span class="slider-value" id="speedValue">1.5</span></label>
+                    <input type="range" min="0.5" max="5" value="1.5" step="0.1" class="slider" id="trackingSpeed" onchange="updateTrackingSpeed(this.value)">
+                </div>
+                <div class="slider-control">
+                    <label>Smoothing Factor <span class="slider-value" id="smoothingValue">0.4</span></label>
+                    <input type="range" min="0.1" max="1" value="0.4" step="0.1" class="slider" id="smoothingFactor" onchange="updateSmoothingFactor(this.value)">
+                </div>
+                <div class="slider-control">
+                    <label>Detection Threshold <span class="slider-value" id="thresholdValue">0.6</span></label>
+                    <input type="range" min="0.3" max="0.9" value="0.6" step="0.05" class="slider" id="detectionThreshold" onchange="updateDetectionThreshold(this.value)">
+                </div>
+            </div>
+
+            <!-- Detection Settings -->
+            <div class="control-section">
+                <h3>Detection Settings</h3>
+                <div class="detection-settings">
+                    <div class="detection-toggle">
+                        <span>Person Detection</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDetectionClass('person', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="detection-toggle">
+                        <span>Vehicle Detection</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="toggleDetectionClass('vehicle', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="detection-toggle">
+                        <span>Face Recognition</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="toggleFaceRecognition(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="detection-toggle">
+                        <span>Motion Detection</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="toggleMotionDetection(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recording Controls -->
+            <div class="control-section">
+                <h3>Recording & Capture</h3>
+                <div class="recording-controls">
+                    <button class="record-button" id="recordButton" onclick="toggleRecording()">
+                        <i class="fas fa-circle"></i> Start Recording
+                    </button>
+                    <button class="record-button" onclick="captureSnapshot()">
+                        <i class="fas fa-camera"></i> Snapshot
+                    </button>
+                    <button class="record-button" onclick="downloadLogs()">
+                        <i class="fas fa-download"></i> Download Logs
+                    </button>
+                </div>
+            </div>
+
+            <!-- Manual Controls -->
+            <div class="control-buttons">
+                <h3>Camera Controls</h3>
+                <div class="arrow-keys">
+                    <button class="arrow-key" onmousedown="startContinuousKey('w')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('w')" ontouchend="stopContinuousKey()">▲</button>
+                    <button class="arrow-key" onmousedown="startContinuousKey('a')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('a')" ontouchend="stopContinuousKey()">◄</button>
+                    <button class="arrow-key" onmousedown="startContinuousKey('s')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('s')" ontouchend="stopContinuousKey()">▼</button>
+                    <button class="arrow-key" onmousedown="startContinuousKey('d')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('d')" ontouchend="stopContinuousKey()">►</button>
+                </div>
+
+                <h3>Laser Controls</h3>
+                <button class="laser-button" onmousedown="startContinuousKey('p')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('p')" ontouchend="stopContinuousKey()">Laser</button>
+                <button class="laser-button" onmousedown="startContinuousKey('i')" onmouseup="stopContinuousKey()" ontouchstart="startContinuousKey('i')" ontouchend="stopContinuousKey()">Random</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- WebSocket Status -->
+    <div class="websocket-status ws-disconnected" id="wsStatus">
+        <i class="fas fa-wifi"></i> Disconnected
+    </div>
+
+    <!-- Log Panel -->
+    <div class="log-panel" id="logPanel">
+        <h4 style="color: #fff; margin-bottom: 10px;">System Logs</h4>
+        <div id="logContent"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+        <p>Follow us: 
+            <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/" target="_blank">LinkedIn</a> | 
+            <a href="https://twitter.com/yourusername" target="_blank">Twitter</a> | 
+            <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        </p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // --- Camera URLs ---
+        let camera1URL = "https://camerastream1.share.zrok.io";
+        let camera2URL = "https://camerajetstream.share.zrok.io";
+        let activationMode1URL = "https://activationmode1.share.zrok.io";
+        let activationMode2URL = "https://activationmode.share.zrok.io";
+        let currentCameraURL = camera1URL;
+        let currentActivationModeURL = activationMode1URL;
+
+        const cameraModes = {
+            camera1: ["NCNN", "LASER", "MANUAL", "CLIENT", "SmartHash", "AI_TRACK", "TENSORRT"],
+            camera2: ["MANUAL", "CLIENT", "AI_ASSIST"]
+        };
+
+        // Performance variables
+        let lastFrameTime = Date.now();
+        let frameCount = 0;
+        let fps = 0;
+        let latency = 0;
+
+        // WebSocket connection
+        let ws = null;
+        let wsReconnectInterval = null;
+
+        // Recording state
+        let isRecording = false;
+        let recordingStartTime = null;
+
+        // System logs
+        let systemLogs = [];
+
+        // Initialize WebSocket
+        function initWebSocket() {
+            const wsUrl = currentCameraURL.replace('https://', 'wss://') + '/ws';
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    updateWSStatus(true);
+                    addLog('WebSocket connected', 'success');
+                    clearInterval(wsReconnectInterval);
+                };
+                
+                ws.onmessage = function(event) {
+                    handleWSMessage(JSON.parse(event.data));
+                };
+                
+                ws.onclose = function() {
+                    updateWSStatus(false);
+                    addLog('WebSocket disconnected', 'warning');
+                    // Attempt to reconnect
+                    wsReconnectInterval = setInterval(() => {
+                        addLog('Attempting to reconnect...', 'info');
+                        initWebSocket();
+                    }, 5000);
+                };
+                
+                ws.onerror = function(error) {
+                    addLog('WebSocket error', 'error');
+                };
+            } catch (error) {
+                addLog('Failed to initialize WebSocket', 'error');
+            }
+        }
+
+        // Handle WebSocket messages
+        function handleWSMessage(data) {
+            if (data.type === 'stats') {
+                updateStats(data);
+            } else if (data.type === 'detection') {
+                updateDetection(data);
+            } else if (data.type === 'hardware') {
+                updateHardwareStats(data);
+            }
+        }
+
+        // Update statistics
+        function updateStats(data) {
+            if (data.fps !== undefined) {
+                document.getElementById('fpsValue').textContent = data.fps.toFixed(1);
+            }
+            if (data.latency !== undefined) {
+                document.getElementById('latencyValue').textContent = data.latency + 'ms';
+            }
+            if (data.detections !== undefined) {
+                document.getElementById('detectionsValue').textContent = data.detections;
+            }
+            if (data.confidence !== undefined) {
+                document.getElementById('confidenceValue').textContent = (data.confidence * 100).toFixed(0) + '%';
+            }
+        }
+
+        // Update detection status
+        function updateDetection(data) {
+            const indicator = document.getElementById('trackingIndicator');
+            const statusText = document.getElementById('trackingStatusText');
+            
+            if (data.tracking) {
+                indicator.className = 'tracking-indicator tracking-active';
+                statusText.textContent = 'Tracking: ' + data.class;
+                
+                // Show AI indicator if AI mode is active
+                if (data.mode === 'AI_TRACK' || data.mode === 'TENSORRT') {
+                    document.getElementById('aiModeIndicator').style.display = 'flex';
+                    document.getElementById('aiModeText').textContent = 'AI ' + data.mode + ' Active';
+                }
+            } else if (data.searching) {
+                indicator.className = 'tracking-indicator tracking-searching';
+                statusText.textContent = 'Searching...';
+                document.getElementById('aiModeIndicator').style.display = 'none';
+            } else {
+                indicator.className = 'tracking-indicator tracking-lost';
+                statusText.textContent = 'Target Lost';
+            }
+        }
+
+        // Update hardware statistics
+        function updateHardwareStats(data) {
+            if (data.gpu) document.getElementById('gpuUsage').textContent = data.gpu + '%';
+            if (data.cpu) document.getElementById('cpuUsage').textContent = data.cpu + '%';
+            if (data.temperature) document.getElementById('temperature').textContent = data.temperature + '°C';
+            if (data.power) document.getElementById('powerUsage').textContent = data.power + 'W';
+        }
+
+        // Update WebSocket status
+        function updateWSStatus(connected) {
+            const status = document.getElementById('wsStatus');
+            if (connected) {
+                status.className = 'websocket-status ws-connected';
+                status.innerHTML = '<i class="fas fa-wifi"></i> Connected';
+            } else {
+                status.className = 'websocket-status ws-disconnected';
+                status.innerHTML = '<i class="fas fa-wifi"></i> Disconnected';
+            }
+        }
+
+        // Add log entry
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = { timestamp, message, type };
+            systemLogs.push(logEntry);
+            
+            // Keep only last 100 logs
+            if (systemLogs.length > 100) {
+                systemLogs.shift();
+            }
+            
+            // Update log display if visible
+            if (document.getElementById('logPanel').style.display === 'block') {
+                updateLogDisplay();
+            }
+        }
+
+        // Update log display
+        function updateLogDisplay() {
+            const logContent = document.getElementById('logContent');
+            logContent.innerHTML = systemLogs.slice(-20).reverse().map(log => 
+                `<div class="log-entry log-${log.type}">[${log.timestamp}] ${log.message}</div>`
+            ).join('');
+        }
+
+        // Toggle log panel
+        function toggleLogPanel() {
+            const panel = document.getElementById('logPanel');
+            if (panel.style.display === 'none' || panel.style.display === '') {
+                panel.style.display = 'block';
+                updateLogDisplay();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        // Sidebar toggle logic
+        function toggleMenu() {
+            document.getElementById("sideMenu").classList.toggle("open");
+        }
+
+        // Track active keys to prevent duplicate events
+        const activeKeys = {};
+
+        // Handle keyboard events with debouncing
+        document.addEventListener("keydown", function (event) {
+            const key = event.key.toLowerCase();
+            if (!activeKeys[key]) {
+                activeKeys[key] = true;
+                startContinuousKey(key);
+            }
+        });
+
+        document.addEventListener("keyup", function (event) {
+            const key = event.key.toLowerCase();
+            if (activeKeys[key]) {
+                activeKeys[key] = false;
+                stopContinuousKey();
+            }
+        });
+
+        // Optimized continuous key commands
+        let keyPressInterval;
+        let lastKeyTime = 0;
+        const KEY_THROTTLE = 50;
+
+        function startContinuousKey(key) {
+            clearInterval(keyPressInterval);
+            sendKey(key);
+            keyPressInterval = setInterval(() => sendKey(key), 100);
+        }
+
+        function stopContinuousKey() {
+            clearInterval(keyPressInterval);
+        }
+
+        function sendKey(key) {
+            const now = Date.now();
+            if (now - lastKeyTime < KEY_THROTTLE) return;
+            lastKeyTime = now;
+            
+            fetch(`${currentActivationModeURL}/key_input`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(`Key ${key} sent:`, data.status);
+                addLog(`Key command: ${key}`, 'info');
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                addLog(`Key command failed: ${key}`, 'error');
+            });
+        }
+
+        function activateMode(mode) {
+            fetch(`${currentActivationModeURL}/activate_mode/${mode}`, { method: "POST" })
+            .then(response => response.json())
+            .then(data => {
+                console.log(`Mode ${mode} activated:`, data.status);
+                addLog(`Mode activated: ${cameraModes[currentCameraURL === camera1URL ? 'camera1' : 'camera2'][mode - 1]}`, 'success');
+                
+                // Check if AI mode
+                const modeName = cameraModes[currentCameraURL === camera1URL ? 'camera1' : 'camera2'][mode - 1];
+                if (modeName === 'AI_TRACK' || modeName === 'TENSORRT') {
+                    document.getElementById('aiModeIndicator').style.display = 'flex';
+                    document.getElementById('aiModeText').textContent = modeName + ' Mode Active';
+                } else {
+                    document.getElementById('aiModeIndicator').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                addLog(`Mode activation failed`, 'error');
+            });
+        }
+
+        // Tracking control functions
+        function updateTrackingSpeed(value) {
+            document.getElementById('speedValue').textContent = value;
+            sendControlUpdate('tracking_speed', value);
+        }
+
+        function updateSmoothingFactor(value) {
+            document.getElementById('smoothingValue').textContent = value;
+            sendControlUpdate('smoothing_factor', value);
+        }
+
+        function updateDetectionThreshold(value) {
+            document.getElementById('thresholdValue').textContent = value;
+            sendControlUpdate('detection_threshold', value);
+        }
+
+        function sendControlUpdate(parameter, value) {
+            fetch(`${currentActivationModeURL}/update_parameter`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ parameter, value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addLog(`Updated ${parameter}: ${value}`, 'info');
+            })
+            .catch(error => {
+                addLog(`Failed to update ${parameter}`, 'error');
+            });
+        }
+
+        // Detection toggles
+        function toggleDetectionClass(className, enabled) {
+            sendControlUpdate(`detect_${className}`, enabled);
+            addLog(`${className} detection: ${enabled ? 'enabled' : 'disabled'}`, 'info');
+        }
+
+        function toggleFaceRecognition(enabled) {
+            sendControlUpdate('face_recognition', enabled);
+            addLog(`Face recognition: ${enabled ? 'enabled' : 'disabled'}`, 'info');
+        }
+
+        function toggleMotionDetection(enabled) {
+            sendControlUpdate('motion_detection', enabled);
+            addLog(`Motion detection: ${enabled ? 'enabled' : 'disabled'}`, 'info');
+            
+            if (enabled) {
+                // Show motion zones
+                drawMotionZones();
+            } else {
+                // Clear motion zones
+                document.getElementById('motionOverlay').innerHTML = '';
+            }
+        }
+
+        // Draw motion detection zones
+        function drawMotionZones() {
+            const overlay = document.getElementById('motionOverlay');
+            overlay.innerHTML = `
+                <div class="motion-zone" style="top: 10%; left: 10%; width: 30%; height: 30%;"></div>
+                <div class="motion-zone" style="top: 10%; right: 10%; width: 30%; height: 30%;"></div>
+                <div class="motion-zone" style="bottom: 10%; left: 10%; width: 30%; height: 30%;"></div>
+                <div class="motion-zone" style="bottom: 10%; right: 10%; width: 30%; height: 30%;"></div>
+            `;
+        }
+
+        // Recording functions
+        function toggleRecording() {
+            const button = document.getElementById('recordButton');
+            
+            if (!isRecording) {
+                isRecording = true;
+                recordingStartTime = Date.now();
+                button.classList.add('recording');
+                button.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+                
+                fetch(`${currentActivationModeURL}/start_recording`, { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    addLog('Recording started', 'success');
+                });
+                
+                // Update recording time
+                updateRecordingTime();
+            } else {
+                isRecording = false;
+                button.classList.remove('recording');
+                button.innerHTML = '<i class="fas fa-circle"></i> Start Recording';
+                
+                fetch(`${currentActivationModeURL}/stop_recording`, { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    addLog('Recording stopped', 'info');
+                });
+            }
+        }
+
+        function updateRecordingTime() {
+            if (isRecording) {
+                const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Update button text with time
+                const button = document.getElementById('recordButton');
+                button.innerHTML = `<i class="fas fa-stop"></i> Stop (${timeStr})`;
+                
+                setTimeout(updateRecordingTime, 1000);
+            }
+        }
+
+        function captureSnapshot() {
+            fetch(`${currentActivationModeURL}/capture_snapshot`, { method: "POST" })
+            .then(response => response.json())
+            .then(data => {
+                addLog('Snapshot captured', 'success');
+                // Flash effect
+                const tvScreen = document.querySelector('.tv-screen');
+                tvScreen.style.filter = 'brightness(2)';
+                setTimeout(() => {
+                    tvScreen.style.filter = 'brightness(1)';
+                }, 200);
+            });
+        }
+
+        function downloadLogs() {
+            const logsText = systemLogs.map(log => 
+                `[${log.timestamp}] [${log.type.toUpperCase()}] ${log.message}`
+            ).join('\n');
+            
+            const blob = new Blob([logsText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sentry_logs_${new Date().toISOString().slice(0, 10)}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            addLog('Logs downloaded', 'info');
+        }
+
+        // Calibration functions
+        function openCalibration() {
+            document.getElementById('calibrationModal').style.display = 'block';
+            addLog('Calibration mode opened', 'info');
+        }
+
+        function closeCalibration() {
+            document.getElementById('calibrationModal').style.display = 'none';
+        }
+
+        function calibrateCamera() {
+            document.getElementById('calibrationStatus').textContent = 'Calibrating camera...';
+            fetch(`${currentActivationModeURL}/calibrate_camera`, { method: "POST" })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('calibrationStatus').textContent = 'Camera calibration complete!';
+                addLog('Camera calibrated', 'success');
+            });
+        }
+
+        function calibrateServos() {
+            document.getElementById('calibrationStatus').textContent = 'Calibrating servos...';
+            fetch(`${currentActivationModeURL}/calibrate_servos`, { method: "POST" })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('calibrationStatus').textContent = 'Servo calibration complete!';
+                addLog('Servos calibrated', 'success');
+            });
+        }
+
+        function calibrateDetection() {
+            document.getElementById('calibrationStatus').textContent = 'Calibrating detection...';
+            fetch(`${currentActivationModeURL}/calibrate_detection`, { method: "POST" })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('calibrationStatus').textContent = 'Detection calibration complete!';
+                addLog('Detection calibrated', 'success');
+            });
+        }
+
+        // Fullscreen toggle
+        function toggleFullScreen() {
+            const feed = document.querySelector(".tv-screen");
+            if (!document.fullscreenElement) {
+                feed.requestFullscreen().catch(err => {
+                    console.error(err);
+                    addLog('Fullscreen failed', 'error');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Enhanced camera switcher
+        function toggleCamera() {
+            // Close WebSocket
+            if (ws) {
+                ws.close();
+            }
+            
+            // Swap URL/activation mode
+            currentCameraURL = currentCameraURL === camera1URL ? camera2URL : camera1URL;
+            currentActivationModeURL = currentCameraURL === camera1URL ? activationMode1URL : activationMode2URL;
+            document.getElementById("cameraTitle").textContent = currentCameraURL === camera1URL ? "Live Camera Feed 1" : "Live Camera Feed 2";
+
+            // Show disclaimer for Camera 2
+            const disclaimer = document.getElementById("disclaimer");
+            if (currentCameraURL === camera2URL) {
+                disclaimer.classList.add("visible");
+            } else {
+                disclaimer.classList.remove("visible");
+            }
+
+            // Show loading spinner
+            document.getElementById("loadingIndicator").style.display = "block";
+
+            // Remove old img and create a new one
+            const tvScreen = document.querySelector(".tv-screen");
+            let oldImg = document.getElementById("liveFeed");
+            if (oldImg) oldImg.remove();
+            const newImg = document.createElement("img");
+            newImg.id = "liveFeed";
+            newImg.className = "camera-feed";
+            newImg.alt = "Live Camera Feed";
+            newImg.src = `${currentCameraURL}/video_feed`;
+
+            // Hide spinner when image loads
+            newImg.onload = function() {
+                document.getElementById("loadingIndicator").style.display = "none";
+                frameCount++;
+                const now = Date.now();
+                const elapsed = now - lastFrameTime;
+                if (elapsed >= 1000) {
+                    fps = Math.round((frameCount * 1000) / elapsed);
+                    document.getElementById("fpsValue").textContent = fps;
+                    frameCount = 0;
+                    lastFrameTime = now;
+                }
+            };
+
+            // Reset FPS counter for new feed
+            frameCount = 0;
+            lastFrameTime = Date.now();
+
+            // Insert at top of tvScreen
+            tvScreen.insertBefore(newImg, tvScreen.firstChild);
+
+            closeAllFeeds();
+            updateModeButtons();
+            
+            // Reinitialize WebSocket for new camera
+            setTimeout(() => {
+                initWebSocket();
+            }, 1000);
+            
+            addLog(`Switched to ${currentCameraURL === camera1URL ? 'Camera 1' : 'Camera 2'}`, 'info');
+        }
+
+        // Update mode buttons dynamically
+        function updateModeButtons() {
+            const modeButtons = document.getElementById("modeButtons");
+            modeButtons.innerHTML = "";
+
+            const modes = currentCameraURL === camera1URL ? cameraModes.camera1 : cameraModes.camera2;
+            modes.forEach((mode, index) => {
+                const button = document.createElement("button");
+                button.textContent = mode;
+                button.onclick = () => activateMode(index + 1);
+                modeButtons.appendChild(button);
+            });
+        }
+
+        // Modal functions
+        function viewAllFeeds() {
+            document.getElementById("allFeedsModal").style.display = "block";
+        }
+        
+        function closeAllFeeds() {
+            document.getElementById("allFeedsModal").style.display = "none";
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById("allFeedsModal");
+            const calibModal = document.getElementById("calibrationModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+            if (event.target === calibModal) {
+                calibModal.style.display = "none";
+            }
+        };
+
+        // FPS monitoring (enhanced)
+        function updateFPS() {
+            const img = document.getElementById("liveFeed");
+            if (!img) return;
+            
+            img.onload = function() {
+                document.getElementById("loadingIndicator").style.display = "none";
+                frameCount++;
+                const now = Date.now();
+                const elapsed = now - lastFrameTime;
+                
+                if (elapsed >= 1000) {
+                    fps = Math.round((frameCount * 1000) / elapsed);
+                    document.getElementById("fpsValue").textContent = fps;
+                    
+                    // Calculate approximate latency
+                    latency = Math.round(1000 / fps);
+                    document.getElementById("latencyValue").textContent = latency + 'ms';
+                    
+                    frameCount = 0;
+                    lastFrameTime = now;
+                }
+            };
+        }
+
+        // Simulate hardware stats (replace with real data from your backend)
+        function simulateHardwareStats() {
+            setInterval(() => {
+                // These would come from your actual backend
+                document.getElementById('gpuUsage').textContent = Math.round(Math.random() * 30 + 40) + '%';
+                document.getElementById('cpuUsage').textContent = Math.round(Math.random() * 20 + 30) + '%';
+                document.getElementById('temperature').textContent = Math.round(Math.random() * 10 + 60) + '°C';
+                document.getElementById('powerUsage').textContent = Math.round(Math.random() * 5 + 15) + 'W';
+            }, 2000);
+        }
+
+        // Handle touch events for mobile
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.classList.contains('arrow-key') || e.target.classList.contains('laser-button')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Initialize on load
+        updateModeButtons();
+        updateFPS();
+        simulateHardwareStats(); // Remove this when you have real data
+        
+        // Initialize WebSocket after a short delay
+        setTimeout(() => {
+            initWebSocket();
+        }, 1000);
+        
+        // Initial log entry
+        addLog('System initialized', 'success');
+        addLog('Camera 1 loaded', 'info');
+    </script>
+</body>
+</html>

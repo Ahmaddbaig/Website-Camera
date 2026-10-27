@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Raspberry Pi Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+    <!-- Logo -->
+    <div class="logo" onclick="location.href='index.html'">
+        <div class="sentry">SENTRY</div>
+        <div class="security">SECURITY</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Welcome to The</h1>
+            <h1>Rasberry Pi Project</h1>
+            <p>Explore the innovation and technology behind our intelligent security system.</p>
+            <a href="#features" class="scroll-down">Learn more</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+    </section>
+
+    <!-- Sidebar Menu -->
+    <div id="sideMenu">
+        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='camerafeed2.html'">📷 View Camera Feed</button>
+        <button onclick="location.href='meet.html'">Meet The Team</button>
+        <button onclick="location.href='buying.html'">Hardware</button>
+        <button onclick="location.href='features.html'">Project Features</button>
+        <button onclick="location.href='faq.html'">FAQ</button>
+        <button onclick="location.href='contact.html'">Contact</button>
+        <button onclick="location.href='login.html'">Login </button>
+        <button onclick="location.href='other.html'">DEMO Page</button>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <h2>About This Project</h2>
+        <p>
+            Discover the innovation behind our <strong>Sentry Security Camera</strong>. With real-time camera feeds, smart activation modes, and advanced features, you’ll experience a new level of security at your fingertips. Step into the future of intelligent security technology.
+        </p>
+    </section>
+
+    <section class="loop-video-section">
+        <h2 class="video-header">Project in Action</h2>
+        <div class="loop-video-container">
+          <video autoplay loop muted playsinline>
+            <source src="../images/tracking.mov" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </section>
+  
+            <section class="full-width-video-section">
+        <h2 class="video-header">Demo Videos</h2>
+        
+        <div class="video-row">
+            <!-- Video 1 -->
+            <div class="video-container">
+                <div class="video-title">Sentry Security Camera Demo 1</div>
+                <video controls>
+                    <source src="../images/1204.mov" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            
+            <!-- Video 2 -->
+            <div class="video-container">
+                <div class="video-title">Sentry Security Camera Demo 2</div>
+                <video controls>
+                    <source src="../images/DEMO.mov" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            
+            <!-- Video 3 -->
+            <div class="video-container">
+                <div class="video-title">Demo Page Overview</div>
+                <video controls>
+                    <source src="../images/Demopage.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="video-container">
+                <div class="video-title">Hardware Overview</div>
+                <video controls>
+                    <source src="../images/final.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <h2>Key Features</h2>
+        <div class="feature-cards">
+            <div class="feature-card">
+                <i class="fas fa-crosshairs"></i> <!-- Icon for tracking and targeting -->
+                <h3>Advanced Camera Features</h3>
+                <p>
+                    Experience unparalleled control with <strong>manual mode</strong>, 
+                    <strong>AI-powered tracking</strong>, and <strong>sentry mode</strong>. 
+                    Enjoy seamless <strong>client-based tracking</strong>, with real-time precision 
+                    on both your Raspberry Pi and the camera itself.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-video"></i>
+                <h3>Live Streaming</h3>
+                <p>View live camera feed with real-time updates directly from your Raspberry Pi.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-moon"></i>
+                <h3>Low-Light Vision</h3>
+                <p>
+                    Never miss a moment, even in the dark. With <strong>low-light vision</strong>, your camera 
+                    captures clear and crisp footage regardless of lighting conditions.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bullseye"></i>
+                <h3>Laser Control</h3>
+                <p>Interact with your surroundings through remote-controlled laser functions.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-network-wired"></i>
+                <h3>Multi-Device Integration</h3>
+                <p>
+                    Seamlessly connect your camera with multiple devices. Access live streams, control features, 
+                    and receive updates directly from your phone, tablet, or computer.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-laptop-code"></i>
+                <h3>Client-Based Tracking</h3>
+                <p>
+                    Enjoy enhanced precision with <strong>client-based tracking</strong>. The system ensures 
+                    efficient and responsive tracking, processing data directly on your Raspberry Pi for real-time results.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-gamepad"></i>
+                <h3>Manual Control</h3>
+                <p>
+                    Take control of your camera remotely. Use the intuitive interface to manually pan, 
+                    tilt, and zoom, giving you complete control at your fingertips.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Smart Sentry Mode</h3>
+                <p>
+                    Automatically detect and track movement in your surroundings. With 
+                    <strong>AI-enhanced sentry mode</strong>, your camera stays alert and ready to respond 
+                    to potential threats, ensuring maximum security.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3>AI Object Recognition</h3>
+                <p>
+                    Your camera can identify and focus on objects of interest with 
+                    <strong>AI-driven recognition</strong>. It’s smarter, faster, and always learning to adapt 
+                    to your environment.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+
+    <!-- Social Links Section -->
+    <section id="socialLinks" class="social-links-section">
+        <h3>Connect with Me</h3>
+        <div class="social-icons">
+            <a href="https://github.com/Ahmaddbaig" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://twitter.com/yourusername" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        </div>
+    </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2023 Sentry Security. All rights reserved.</p>
+            <p>Follow us: <a href="https://www.linkedin.com/in/ahmad-baig-9a4251240/">LinkedIn</a> | <a href="#">Twitter</a> | <a href="#">Facebook</a></p>
+        </footer>
+
+    <!-- JavaScript for Sidebar Toggle -->
+    <script>
+        function toggleMenu() {
+            const sideMenu = document.getElementById("sideMenu");
+            sideMenu.classList.toggle("open");
+        }
+    </script>
+</body>
+</html>

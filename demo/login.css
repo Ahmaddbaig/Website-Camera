@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=San+Francisco+Pro:wght@400;600&display=swap');
+
+/* General Body Styling */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'San Francisco Pro', sans-serif;
+}
+
+/* Background with Particles */
+body.login-background, 
+body.signup-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(to bottom, #f9f9fb, #e9ecef); /* Subtle gray gradient */
+    overflow: hidden;
+}
+
+/* Particle container */
+#particle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: transparent; /* Keep it clean, particles animate here */
+}
+
+/* Login and Signup Containers */
+.login-container, 
+.signup-container {
+    width: 360px;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    text-align: center;
+    z-index: 1;
+    position: relative;
+}
+
+/* Titles */
+.login-container h2, 
+.signup-container h2 {
+    font-size: 2em;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #1d1d1f;
+}
+
+/* Input Group */
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    color: #6e6e73;
+}
+
+.input-group input[type="text"], 
+.input-group input[type="email"], 
+.input-group input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #007aff;
+    outline: none;
+    box-shadow: 0px 4px 10px rgba(0, 122, 255, 0.2);
+}
+
+/* Buttons */
+button.login-button, 
+button.signup-button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #007aff;
+    color: white;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.login-button:hover, 
+button.signup-button:hover {
+    background: #005bb5;
+}
+
+/* Links */
+a.signup-link, 
+a.login-link {
+    display: block;
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #007aff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a.signup-link:hover, 
+a.login-link:hover {
+    color: #005bb5;
+}
