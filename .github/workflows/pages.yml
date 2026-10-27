@@ -23,9 +23,8 @@ jobs:
       - name: Collect site files
         run: |
           mkdir -p _site
-          cp *.html *.css *.js _site/
+          cp index.html style.css _site/
           cp -r images _site/images
-          cp -r demo _site/demo
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
